@@ -4,13 +4,15 @@ import 'package:findcarsale/shared/presentation/formz_state.dart';
 
 import '../../domain/category_providers.dart';
 
-final catNotifierProvider =
-    StateNotifierProvider.autoDispose<CategoryNotifier, FormzState>((ref) {
+final carconditionNotifierProvider =
+    StateNotifierProvider.autoDispose<CarConditionNotifier, FormzState>((ref) {
       final repository = ref.read(categoryRepositoryProvider);
-      return CategoryNotifier(repository)..fetchAllCatList();
+      return CarConditionNotifier(repository)..fetchAllCatList();
     });
-final addCatNotifierProvider =
-    StateNotifierProvider.autoDispose<AddCategoryNotifier, FormzState>((ref) {
+final addCarConditionNotifierProvider =
+    StateNotifierProvider.autoDispose<AddCarConditionNotifier, FormzState>((
+      ref,
+    ) {
       final repository = ref.read(categoryRepositoryProvider);
-      return AddCategoryNotifier(repository);
+      return AddCarConditionNotifier(repository);
     });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:findcarsale/features/add_edit_sale/presentation/provider/cat_provider.dart';
+import 'package:findcarsale/features/add_edit_sale/presentation/provider/car_condition_provider.dart';
 import 'package:findcarsale/features/add_edit_sale/presentation/widgets/title_head.dart';
 import 'package:findcarsale/features/explore/presentation/providers/filter_state_provider.dart';
 import 'package:findcarsale/features/explore/presentation/screens/explore_screen.dart';
@@ -33,7 +33,7 @@ class _CategoriesListBottomsheetState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(catNotifierProvider);
+    final state = ref.watch(carconditionNotifierProvider);
     final catList = ref.watch(catListProvider);
 
     return Padding(

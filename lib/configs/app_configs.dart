@@ -1,6 +1,6 @@
-
 class AppConfigs {
-  static String url = 'http://18.232.33.127:8000';
+  // http://54.146.185.244/api/v1/find/car/sales/
+  static String url = 'http://54.146.185.244:8000';
   // static String url = 'http://127.0.0.1:8000';
   ///http://127.0.0.1:8000/api/v1/home/user/login/
   static String baseUrl = '$url/api/v1';
@@ -13,8 +13,8 @@ class AppConfigs {
 
   static String postSearchEndpoint = '/posts/search';
 
-  static String yardSaleEndpoint = '/garage/yard/sales/';
-  static String mySaleEndpoint = '/garage/yard/sales/my/sales/';
+  static String yardSaleEndpoint = '/find/car/sales/';
+  static String mySaleEndpoint = '/find/car/sales/my/sales/';
 
   static String changePasswordEndpoint = '/user/changed_password/';
   static String uploadAttachment = '/attachment/save_attachment/';
@@ -23,9 +23,9 @@ class AppConfigs {
   static String getUserEndpoint({required String id}) => '/user/$id/';
   static String profileEndpoint = '/user/profile/';
   static String logout = '/home/user/logout/';
-  static String createSales = '/garage/yard/sales/';
+  static String createSales = 'find/car/sales/';
   static String payementSales = '/garage/yard/payment/';
-  static String getCategory = '/garage/yard/category/';
+  static String getCarCondition = '/find/carsale/conditions/';
 
   static String stripeEndpoint = 'https://api.stripe.com/v1/payment_intents';
 }

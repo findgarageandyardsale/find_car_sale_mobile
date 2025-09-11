@@ -160,14 +160,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 filterState.isGarage == null &&
                 (filterState.selectedCategories ?? []).isEmpty);
           }
-        case FilterEnum.garage:
-          {
-            return filterState.isGarage == true;
-          }
-        case FilterEnum.yard:
-          {
-            return filterState.isGarage == false;
-          }
+
         case FilterEnum.date:
           {
             return filterState.endDate != null;
@@ -190,32 +183,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               ref.read(filterNotifierProvider.notifier).toRadiusInitalState();
             }
           }
-        case FilterEnum.garage:
-          {
-            ref
-                .read(filterNotifierProvider.notifier)
-                .updateGarage(
-                  isGarage:
-                      filterState.isGarage == null
-                          ? true
-                          : filterState.isGarage == true
-                          ? null
-                          : true,
-                );
-          }
-        case FilterEnum.yard:
-          {
-            ref
-                .read(filterNotifierProvider.notifier)
-                .updateGarage(
-                  isGarage:
-                      filterState.isGarage == null
-                          ? false
-                          : filterState.isGarage == false
-                          ? null
-                          : false,
-                );
-          }
+
         case FilterEnum.date:
           {
             primaryBottomSheet(

@@ -4,22 +4,22 @@ import '../../../../shared/domain/models/response_data.dart';
 import '../../../../shared/exceptions/http_exception.dart';
 import '../datasource/add_garage_remote_datasource.dart';
 
-abstract class GetCategoryRepository {
-  Future<Either<AppException, PaginatedResponse>> getCategoryList();
-  Future<Either<AppException, ResponseData>> addCategory(String catName);
+abstract class GetCarConditionRepository {
+  Future<Either<AppException, PaginatedResponse>> getCarConditionList();
+  Future<Either<AppException, ResponseData>> addCarCondition(String catName);
 }
 
-class GetCategoryRepositoryImpl extends GetCategoryRepository {
+class GetCategoryRepositoryImpl extends GetCarConditionRepository {
   final AddGarageDatasource addGarageDatasource;
   GetCategoryRepositoryImpl(this.addGarageDatasource);
 
   @override
-  Future<Either<AppException, PaginatedResponse>> getCategoryList() {
-    return addGarageDatasource.getCategory();
+  Future<Either<AppException, PaginatedResponse>> getCarConditionList() {
+    return addGarageDatasource.getCarCondition();
   }
 
   @override
-  Future<Either<AppException, ResponseData>> addCategory(String catName) {
-    return addGarageDatasource.postCategory(catName);
+  Future<Either<AppException, ResponseData>> addCarCondition(String catName) {
+    return addGarageDatasource.postCarcondition(catName);
   }
 }

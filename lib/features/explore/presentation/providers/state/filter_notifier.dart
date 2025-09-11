@@ -10,7 +10,6 @@ class FilterNotifier extends StateNotifier<FilterState> {
     double? radius,
     DateTime? startDate,
     DateTime? endDate,
-    bool? isGarage,
     List<Category>? selectedCategories,
   }) {
     state = state.copyWith(

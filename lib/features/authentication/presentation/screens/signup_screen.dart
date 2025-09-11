@@ -174,9 +174,9 @@ class SignupScreen extends ConsumerWidget {
                             labelText: 'Phone Number',
                             textInputAction: TextInputAction.next,
                             validator: FormBuilderValidators.compose([
-                              FormBuilderValidators.required(
-                                errorText: 'Phone Number is empty.',
-                              ),
+                              // FormBuilderValidators.required(
+                              //   errorText: 'Phone Number is empty.',
+                              // ),
                               FormBuilderValidators.match(
                                 RegExp(
                                   r'^(?:\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
@@ -206,6 +206,7 @@ class SignupScreen extends ConsumerWidget {
                             suiteController: suiteController,
                             zipCodeController: zipCodeController,
                             formKey: formKey,
+                            isRequired: false,
                           ),
                           Spacing.sizedBoxH_24(),
                           AuthField(

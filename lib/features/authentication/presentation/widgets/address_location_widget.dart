@@ -17,13 +17,14 @@ class AddressLocationWidget extends StatelessWidget {
     required this.suiteController,
     required this.zipCodeController,
     required this.formKey,
+    this.isRequired,
   });
   final TextEditingController streetNumberController;
   final TextEditingController suiteController;
   final TextEditingController cityController;
   final TextEditingController stateController;
   final TextEditingController zipCodeController;
-
+  final bool? isRequired;
   final GlobalKey<FormBuilderState> formKey;
 
   @override
@@ -46,9 +47,10 @@ class AddressLocationWidget extends StatelessWidget {
           labelText: 'Street Name',
           textInputAction: TextInputAction.next,
           validator: FormBuilderValidators.compose([
-            FormBuilderValidators.required(
-              errorText: 'Street Name cannot be empty.',
-            ),
+            if (isRequired == true)
+              FormBuilderValidators.required(
+                errorText: 'Street Name cannot be empty.',
+              ),
           ]),
           keyboardType: TextInputType.text,
           onChanged: (p0) {
@@ -129,9 +131,10 @@ class AddressLocationWidget extends StatelessWidget {
                 labelText: 'City',
                 textInputAction: TextInputAction.next,
                 validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                    errorText: 'City cannot be empty.',
-                  ),
+                  if (isRequired == true)
+                    FormBuilderValidators.required(
+                      errorText: 'City cannot be empty.',
+                    ),
                 ]),
                 keyboardType: TextInputType.text,
                 onChanged: (value) {
@@ -188,9 +191,10 @@ class AddressLocationWidget extends StatelessWidget {
                 },
                 textInputAction: TextInputAction.next,
                 validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                    errorText: 'State cannot be empty.',
-                  ),
+                  if (isRequired == true)
+                    FormBuilderValidators.required(
+                      errorText: 'State cannot be empty.',
+                    ),
                 ]),
                 keyboardType: TextInputType.text,
                 onChanged: (value) {},
@@ -206,9 +210,10 @@ class AddressLocationWidget extends StatelessWidget {
           labelText: 'Zip Code',
           textInputAction: TextInputAction.next,
           validator: FormBuilderValidators.compose([
-            FormBuilderValidators.required(
-              errorText: 'Zip Code cannot be empty.',
-            ),
+            if (isRequired == true)
+              FormBuilderValidators.required(
+                errorText: 'Zip Code cannot be empty.',
+              ),
           ]),
           keyboardType: TextInputType.text,
           onChanged: (value) {

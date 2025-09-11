@@ -10,7 +10,7 @@ final categoryDatasourceProvider =
       (_, networkService) => AddGarageRemoteDatasource(networkService),
     );
 
-final categoryRepositoryProvider = Provider<GetCategoryRepository>((ref) {
+final categoryRepositoryProvider = Provider<GetCarConditionRepository>((ref) {
   final networkService = ref.watch(netwokServiceProvider);
   final datasource = ref.read(categoryDatasourceProvider(networkService));
   final respository = GetCategoryRepositoryImpl(datasource);

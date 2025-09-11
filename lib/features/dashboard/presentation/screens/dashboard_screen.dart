@@ -35,9 +35,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int currentPageIndex = 0;
 
   final appleId =
-      '6737464722'; // If this value is null, its packagename will be considered
+      ''; // If this value is null, its packagename will be considered
   final playStoreId =
-      'com.garageyard.garageyardsale'; // If this value is null, its packagename will be considered
+      'com.findorlookup.findcarsale'; // If this value is null, its packagename will be considered
 
   Future<String> _getDeviceId() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();

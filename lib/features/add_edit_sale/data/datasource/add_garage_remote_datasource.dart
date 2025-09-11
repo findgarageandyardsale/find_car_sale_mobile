@@ -17,8 +17,8 @@ abstract class AddGarageDatasource {
     required Map<String, dynamic> singleItem,
     required int id,
   });
-  Future<Either<AppException, PaginatedResponse>> getCategory();
-  Future<Either<AppException, ResponseData>> postCategory(String catName);
+  Future<Either<AppException, PaginatedResponse>> getCarCondition();
+  Future<Either<AppException, ResponseData>> postCarcondition(String catName);
 }
 
 class AddGarageRemoteDatasource extends AddGarageDatasource {
@@ -103,9 +103,9 @@ class AddGarageRemoteDatasource extends AddGarageDatasource {
   }
 
   @override
-  Future<Either<AppException, PaginatedResponse>> getCategory() async {
+  Future<Either<AppException, PaginatedResponse>> getCarCondition() async {
     final response = await networkService.get(
-      AppConfigs.getCategory,
+      AppConfigs.getCarCondition,
       queryParameters: {'per_page': 100},
     );
 
@@ -126,11 +126,11 @@ class AddGarageRemoteDatasource extends AddGarageDatasource {
   }
 
   @override
-  Future<Either<AppException, ResponseData>> postCategory(
+  Future<Either<AppException, ResponseData>> postCarcondition(
     String catName,
   ) async {
     final response = await networkService.post(
-      AppConfigs.getCategory,
+      AppConfigs.getCarCondition,
       data: {'name': catName},
     );
 

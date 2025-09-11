@@ -2,15 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/features/add_edit_sale/data/repositories/get_categories_repository.dart';
 import 'package:findcarsale/shared/presentation/formz_state.dart';
 
-class CategoryNotifier extends StateNotifier<FormzState> {
-  final GetCategoryRepository catRepository;
+class CarConditionNotifier extends StateNotifier<FormzState> {
+  final GetCarConditionRepository catRepository;
 
-  CategoryNotifier(this.catRepository) : super(const FormzState.initial());
+  CarConditionNotifier(this.catRepository) : super(const FormzState.initial());
 
   Future<void> fetchAllCatList() async {
     state = const FormzState.loading();
 
-    final response = await catRepository.getCategoryList();
+    final response = await catRepository.getCarConditionList();
     //  Check if the notifier is still mounted before updating the state
     if (mounted) {
       state = response.fold(
@@ -25,15 +25,16 @@ class CategoryNotifier extends StateNotifier<FormzState> {
   }
 }
 
-class AddCategoryNotifier extends StateNotifier<FormzState> {
-  final GetCategoryRepository catRepository;
+class AddCarConditionNotifier extends StateNotifier<FormzState> {
+  final GetCarConditionRepository catRepository;
 
-  AddCategoryNotifier(this.catRepository) : super(const FormzState.initial());
+  AddCarConditionNotifier(this.catRepository)
+    : super(const FormzState.initial());
 
   Future<void> addCateggory(String catName) async {
     state = const FormzState.loading();
 
-    final response = await catRepository.addCategory(catName);
+    final response = await catRepository.addCarCondition(catName);
     //  Check if the notifier is still mounted before updating the state
     if (mounted) {
       state = response.fold((l) => FormzState.failure(l), (r) {
