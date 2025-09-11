@@ -13,9 +13,9 @@ import 'package:state_notifier/state_notifier.dart';
 class AddDataNotifier extends StateNotifier<Garageayard?> {
   AddDataNotifier() : super(const Garageayard());
 
-  bool isSelected(Category cat) {
-    List<Category> categories = state?.category ?? [];
-    return categories.contains(cat);
+  bool isSelected(CarCondition cat) {
+    CarCondition? categories = state?.condition;
+    return categories?.id == cat.id;
   }
 
   void manageWholeData(Map<String, dynamic> intitialData) {
@@ -46,6 +46,12 @@ class AddDataNotifier extends StateNotifier<Garageayard?> {
         promoCode: data['promo_code'],
         location: LocationModel.fromJson(locaionData),
         attachments: state?.attachments ?? [],
+        model: data['model'],
+        brand: data['brand'],
+        miles: data['miles'],
+        warranty: data['warranty'],
+        isNew: data['is_new'],
+        phoneNumber: data['phone_number'],
       );
       state = garageayard;
     } catch (e) {
@@ -112,23 +118,35 @@ class AddDataNotifier extends StateNotifier<Garageayard?> {
     return updatedSlots;
   }
 
-  void updateCat(Category cat) {
+  void updateCat(CarCondition cat) {
     try {
       // Create a new list of categories to ensure state change
-      List<Category> categories = List.from(state?.category ?? []);
+      CarCondition? categories = state?.condition;
 
-      if (categories.contains(cat)) {
+      if (categories?.id == cat.id) {
         // Remove the category if it's already selected
-        categories.removeWhere((element) => element.id == cat.id);
+        categories = null;
       } else {
         // Add the category if it's not selected
-        categories.add(cat);
+        categories = cat;
       }
 
       // Update the state with a new instance of Garageayard
-      state = state?.copyWith(category: categories);
+      state = state?.copyWith(condition: categories);
     } catch (e) {
       log('UpdateCat Error: ${e.toString()}');
+    }
+  }
+
+  void updateSingleCat(CarCondition cat) {
+    try {
+      // For single selection, replace the entire list with just the selected category
+      CarCondition categories = cat;
+
+      // Update the state with a new instance of Garageayard
+      state = state?.copyWith(condition: categories);
+    } catch (e) {
+      log('UpdateSingleCat Error: ${e.toString()}');
     }
   }
 

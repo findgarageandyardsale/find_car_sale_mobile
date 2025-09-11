@@ -12,6 +12,6 @@ final sliderRangeProvider = StateProvider<double>((ref) {
   return 15.0;
 });
 
-final catListProvider = StateProvider.autoDispose<List<Category>?>((ref) {
+final catListProvider = StateProvider.autoDispose<List<CarCondition>?>((ref) {
   return null;
 });

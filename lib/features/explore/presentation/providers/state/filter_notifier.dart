@@ -10,7 +10,7 @@ class FilterNotifier extends StateNotifier<FilterState> {
     double? radius,
     DateTime? startDate,
     DateTime? endDate,
-    List<Category>? selectedCategories,
+    List<CarCondition>? selectedCategories,
   }) {
     state = state.copyWith(
       zipCode: zipCode ?? state.zipCode,
@@ -58,16 +58,16 @@ class FilterNotifier extends StateNotifier<FilterState> {
     state = state.copyWith(isGarage: isGarage);
   }
 
-  bool isSelectedCategory(Category category) {
+  bool isSelectedCategory(CarCondition category) {
     return (state.selectedCategories ?? []).any(
       (element) => element.id == category.id,
     );
   }
 
-  void updateCat(Category cat) {
+  void updateCat(CarCondition cat) {
     try {
       // Create a new list of categories to ensure state change
-      List<Category> categories = List.from(state.selectedCategories ?? []);
+      List<CarCondition> categories = List.from(state.selectedCategories ?? []);
 
       if (categories.contains(cat)) {
         // Remove the category if it's already selected

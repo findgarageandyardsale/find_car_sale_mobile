@@ -5,21 +5,21 @@ import 'package:findcarsale/shared/domain/models/garage_yard/garage_yard_model.d
 import 'package:findcarsale/shared/theme/app_colors.dart';
 import 'package:findcarsale/shared/widgets/custom_filter_chip.dart';
 
-class CategorySelector extends StatefulWidget {
-  final List<Category> cats;
-  final bool isGarage;
+class CarConditionSelector extends StatefulWidget {
+  final List<CarCondition> cats;
+  final bool isSingle;
 
-  const CategorySelector({
+  const CarConditionSelector({
     super.key,
     required this.cats,
-    required this.isGarage,
+    this.isSingle = false,
   });
 
   @override
-  State<CategorySelector> createState() => _CategorySelectorState();
+  State<CarConditionSelector> createState() => _CarConditionSelectorState();
 }
 
-class _CategorySelectorState extends State<CategorySelector> {
+class _CarConditionSelectorState extends State<CarConditionSelector> {
   bool _showAll = false; // State to track whether to show all categories or not
   int perLine = 3; // Number of items per line
 
@@ -45,15 +45,20 @@ class _CategorySelectorState extends State<CategorySelector> {
                     return CustomFilterChip(
                       text: singleCat.name ?? '',
                       activeColor:
-                          widget.isGarage
-                              ? AppColors.secondaryContainer
-                              : AppColors.secondaryBorder,
+                          //  AppColors.secondaryContainer
+                          AppColors.secondaryBorder,
                       isActive: isSelected,
                       unactiveColor: Colors.transparent,
                       onTap: () {
-                        ref
-                            .read(addDataNotifierProvider.notifier)
-                            .updateCat(singleCat);
+                        if (widget.isSingle) {
+                          ref
+                              .read(addDataNotifierProvider.notifier)
+                              .updateSingleCat(singleCat);
+                        } else {
+                          ref
+                              .read(addDataNotifierProvider.notifier)
+                              .updateCat(singleCat);
+                        }
                       },
                     );
                   },

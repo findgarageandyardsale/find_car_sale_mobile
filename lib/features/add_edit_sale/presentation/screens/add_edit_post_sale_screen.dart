@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:findcarsale/features/add_edit_sale/presentation/provider/warranty_state_provider%20copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -20,6 +21,7 @@ import 'package:findcarsale/shared/widgets/action_button.dart';
 import 'package:findcarsale/shared/widgets/custom_loading.dart';
 import 'package:findcarsale/shared/widgets/custom_toast.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../services/stripe_service.dart';
 import '../../../../shared/globals.dart';
 import '../../../../shared/presentation/formz_state.dart';
@@ -28,6 +30,8 @@ import '../../../../shared/widgets/custom_bottomsheet.dart';
 import '../provider/add_data_provider.dart';
 import '../provider/add_state_provider.dart';
 import '../provider/car_condition_provider.dart';
+import '../provider/car_state_condition_state_provider.dart';
+import 'package:findcarsale/shared/widgets/custom_radio_button.dart';
 import '../widgets/image_screen.dart';
 import '../widgets/sale_timing.dart';
 import '../widgets/title_head.dart';
@@ -51,6 +55,10 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
   final TextEditingController stateController = TextEditingController();
   final TextEditingController zipCodeController = TextEditingController();
   final TextEditingController promoCodeController = TextEditingController();
+  final TextEditingController modelController = TextEditingController();
+  final TextEditingController brandController = TextEditingController();
+  final TextEditingController milesController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
   final formKey = GlobalKey<FormBuilderState>();
 
   bool isGarage = true;
@@ -68,6 +76,11 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
     cityController.text = widget.garageayard?.location?.locality ?? '';
     stateController.text = widget.garageayard?.location?.adminArea ?? '';
     zipCodeController.text = widget.garageayard?.location?.zipCode ?? '';
+    milesController.text = widget.garageayard?.miles?.toString() ?? '';
+    modelController.text = widget.garageayard?.model ?? '';
+    brandController.text = widget.garageayard?.brand ?? '';
+    phoneNumberController.text = widget.garageayard?.phoneNumber ?? '';
+    promoCodeController.text = widget.garageayard?.promoCode ?? '';
 
     // Add listeners to the controllers to clear validation errors
 
@@ -128,6 +141,12 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
             .read(customAttachmentProvider('image').notifier)
             .addAttachmentofServer(widget.garageayard?.attachments);
       }
+      ref
+          .read(warrantyStateNotifierProvider.notifier)
+          .updateWarrantyCondition(widget.garageayard?.warranty);
+      ref
+          .read(carStateConditionNotifierProvider.notifier)
+          .updateCarCondition(widget.garageayard?.isNew);
     });
   }
 
@@ -158,7 +177,8 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
         PrintUtils.customLog('>>>>>>>>>>>>>>>>>>>>>');
         // String uuid = Uuid().v4();
 
-        String? transactionId = await StripeService.instance.makePayment();
+        String? transactionId = Uuid().v4();
+        // String? transactionId = await StripeService.instance.makePayment();
         Navigator.of(context).pop();
 
         if ((transactionId ?? '').isNotEmpty) {
@@ -351,7 +371,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
         ref.read(carconditionNotifierProvider.notifier).fetchAllCatList();
 
         // change the next into Category object
-        Category item = Category.fromJson(next.data);
+        CarCondition item = CarCondition.fromJson(next.data);
         ref.read(addDataNotifierProvider.notifier).updateCat(item);
 
         CustomToast.showToast(
@@ -383,12 +403,19 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
       child: context.doublePos(
         isGarage: isGarage,
         isActive: null,
-        statusText: isGarage ? '$title Garage' : '$title Yard ',
+        statusText: '$title Car Sale',
         onPosPressed:
             imageLoadingState
                 ? null
                 : () async {
                   try {
+                    final isNew =
+                        ref
+                            .read(carStateConditionNotifierProvider.notifier)
+                            .state;
+                    final isWarranty =
+                        ref.read(warrantyStateNotifierProvider.notifier).state;
+                    PrintUtils.customLog(isNew.toString());
                     FocusScope.of(context).unfocus();
                     if (formKey.currentState?.saveAndValidate() ?? false) {
                       if ((ref.read(addDataNotifierProvider)?.attachments ?? [])
@@ -399,9 +426,14 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                         );
                         return;
                       }
+
                       ref.read(addNotifierProvider.notifier).loadingState();
                       Map<String, dynamic> currentData = {};
-                      currentData.addAll({'is_garage': isGarage});
+                      currentData.addAll({
+                        'is_new': isNew,
+
+                        'warranty': isWarranty,
+                      });
                       final data = formKey.currentState?.value;
                       if (data != null) {
                         currentData.addAll(data);
@@ -481,7 +513,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
           ),
         ),
         content: Container(
-          // color: AppColors.white,
+          color: AppColors.white,
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Padding(
@@ -530,86 +562,173 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       keyboardType: TextInputType.multiline,
                     ),
                     Spacing.sizedBoxH_20(),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final carConditionNotifier = ref.read(
+                          carStateConditionNotifierProvider.notifier,
+                        );
+                        final carCondition = ref.watch(
+                          carStateConditionNotifierProvider,
+                        );
+
+                        return CustomRadioGroup<bool>(
+                          value: carCondition,
+                          onChanged: (value) {
+                            carConditionNotifier.updateCarCondition(value);
+                          },
+                          direction: Axis.horizontal,
+                          options: const [
+                            CustomRadioOption(value: true, title: 'New'),
+                            CustomRadioOption(value: false, title: 'Used'),
+                          ],
+                        );
+                      },
+                    ),
+
+                    Spacing.sizedBoxH_20(),
+                    AuthField(
+                      name: 'model',
+                      hintText: 'Model*',
+                      labelText: 'Model*',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(
+                          errorText: 'Model cannot be empty.',
+                        ),
+                      ]),
+                      controller: modelController,
+                      // Apply the custom TextInputFormatter
+                    ),
+                    Spacing.sizedBoxH_20(),
+                    AuthField(
+                      name: 'brand',
+                      hintText: 'Brand*',
+                      labelText: 'Brand*',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(
+                          errorText: 'Brand cannot be empty.',
+                        ),
+                      ]),
+                      controller: brandController,
+                      // Apply the custom TextInputFormatter
+                    ),
+                    Spacing.sizedBoxH_20(),
+                    AuthField(
+                      name: 'miles',
+                      hintText: 'Current Mileage*',
+                      labelText: 'Current Mileage*',
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(
+                          errorText: 'Current Mileage cannot be empty.',
+                        ),
+                      ]),
+                      controller: milesController,
+                      // Apply the custom TextInputFormatter
+                    ),
+
+                    Spacing.sizedBoxH_20(),
+                    TitleHead(title: 'Any Warranty?'),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final warrantyConditionNotifier = ref.read(
+                          warrantyStateNotifierProvider.notifier,
+                        );
+                        final warrantyCondition = ref.watch(
+                          warrantyStateNotifierProvider,
+                        );
+
+                        return CustomRadioGroup<bool>(
+                          value: warrantyCondition,
+                          onChanged: (value) {
+                            warrantyConditionNotifier.updateWarrantyCondition(
+                              value,
+                            );
+                          },
+                          direction: Axis.horizontal,
+                          options: const [
+                            CustomRadioOption(value: true, title: 'Yes'),
+                            CustomRadioOption(value: false, title: 'No'),
+                          ],
+                        );
+                      },
+                    ),
+
+                    Spacing.sizedBoxH_20(),
                     /////
                     state.when(
                       initial: () {
                         return const SizedBox.shrink();
                       },
                       success: (categories) {
-                        List<Category> cats =
+                        List<CarCondition> cats =
                             (categories as List<dynamic>)
-                                .map((category) => Category.fromJson(category))
+                                .map(
+                                  (category) => CarCondition.fromJson(category),
+                                )
                                 .toList();
-                        return cats.isEmpty
-                            ? const SizedBox.shrink()
-                            : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                TitleHead(
-                                  title: 'Category',
-                                  subtitle:
-                                      (addCatdata?.category ?? []).isEmpty
-                                          ? null
-                                          : '${(addCatdata?.category ?? []).length} Selected',
-                                  clearWidget: TextButton.icon(
-                                    // padding: EdgeInsets.zero,
-                                    onPressed: () {
-                                      final controller =
-                                          TextEditingController();
-                                      primaryBottomSheet(
-                                        context,
-                                        child: Column(
-                                          children: [
-                                            AuthField(
-                                              autoFocus: true,
-                                              name: 'categoru',
-                                              hintText: 'Category Name',
-                                              labelText: 'Category Name',
-                                              controller: controller,
-                                            ),
-                                            Spacing.sizedBoxH_12(),
-                                            ActionButton(
-                                              width: double.infinity,
-                                              label: 'Add Category',
-                                              onPressed: () {
-                                                if (controller
-                                                    .text
-                                                    .isNotEmpty) {
-                                                  ref
-                                                      .read(
-                                                        addCarConditionNotifierProvider
-                                                            .notifier,
-                                                      )
-                                                      .addCateggory(
-                                                        controller.text,
-                                                      );
-
-                                                  Navigator.of(context).pop();
-                                                }
-                                              },
-                                            ),
-                                          ],
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TitleHead(
+                              title: 'Condition',
+                              // subtitle:
+                              //     (addCatdata?.category ?? []).isEmpty
+                              //         ? null
+                              //         : '${(addCatdata?.category ?? []).length} Selected',
+                              clearWidget: TextButton.icon(
+                                // padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  final controller = TextEditingController();
+                                  primaryBottomSheet(
+                                    context,
+                                    child: Column(
+                                      children: [
+                                        AuthField(
+                                          autoFocus: true,
+                                          name: 'condition',
+                                          hintText: 'Condition',
+                                          labelText: 'Condition',
+                                          controller: controller,
                                         ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: Text(
-                                      'Add Category',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge
-                                          ?.copyWith(color: AppColors.primary),
+                                        Spacing.sizedBoxH_12(),
+                                        ActionButton(
+                                          width: double.infinity,
+                                          label: 'Add Condition',
+                                          onPressed: () {
+                                            if (controller.text.isNotEmpty) {
+                                              ref
+                                                  .read(
+                                                    addCarConditionNotifierProvider
+                                                        .notifier,
+                                                  )
+                                                  .addCateggory(
+                                                    controller.text,
+                                                  );
+
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                  ),
+                                  );
+                                },
+                                icon: const Icon(Icons.add),
+                                label: Text(
+                                  'Add Condition',
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(color: AppColors.primary),
                                 ),
-                                CategorySelector(
-                                  cats: cats,
-                                  isGarage: isGarage,
-                                ),
-                                Spacing.sizedBoxH_20(),
-                              ],
-                            );
+                              ),
+                            ),
+                            CarConditionSelector(cats: cats, isSingle: true),
+                            Spacing.sizedBoxH_20(),
+                          ],
+                        );
                       },
                       loading: () {
                         return Column(
@@ -789,6 +908,43 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       keyboardType: TextInputType.text,
                       onChanged: (value) {},
                       controller: zipCodeController,
+                    ),
+                    Spacing.sizedBoxH_24(),
+                    Text(
+                      'Contact Information',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Spacing.sizedBoxH_08(),
+                    AuthField(
+                      name: 'phone_number',
+                      hintText: 'Phone Number',
+                      labelText: 'Phone Number',
+                      textInputAction: TextInputAction.next,
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(
+                          errorText: 'Phone Number is empty.',
+                        ),
+                        FormBuilderValidators.match(
+                          RegExp(
+                            r'^(?:\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
+                          ),
+                          errorText: 'Invalid American Phone Number',
+                        ),
+                      ]),
+                      keyboardType: TextInputType.phone,
+                      onChanged: (value) {
+                        if (formKey
+                                .currentState
+                                ?.fields['phone_number']
+                                ?.hasError ??
+                            false) {
+                          formKey.currentState?.fields['phone_number']
+                              ?.validate();
+                        }
+                      },
+                      controller: phoneNumberController,
                     ),
                     Spacing.sizedBoxH_24(),
                     const TitleHead(

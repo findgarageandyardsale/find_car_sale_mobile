@@ -7,6 +7,7 @@ import 'package:findcarsale/shared/presentation/formz_state.dart';
 import 'package:findcarsale/shared/utils/helper_constant.dart';
 import 'package:findcarsale/shared/utils/print_utils.dart';
 import 'package:findcarsale/shared/widgets/custom_toast.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../../shared/utils/cusotm_date_utils.dart';
 import '../../../data/repositories/add_garage_repository.dart';
 
@@ -35,10 +36,6 @@ class AddNotifier extends StateNotifier<FormzState> {
       List<Map<String, dynamic>> availableTimeSlots =
           convertAvailableTimeSlotListToJson(timeSlots);
 
-      List<int> categories = [];
-      for (var element in (postData!.category ?? [])) {
-        categories.add(element.id!);
-      }
       final postPrice =
           (HelperConstant.priceForEach *
               (postData?.availableTimeSlots ?? []).length);
@@ -50,17 +47,19 @@ class AddNotifier extends StateNotifier<FormzState> {
               .toString();
 
       Map<String, dynamic> data = postData!.toJson();
-      data['category'] = categories;
+      data['condition'] = postData?.condition?.id;
       data['price'] = postPrice;
+      data['name'] = postData?.title;
       data['status'] = 'Active';
       data['available_time_slots'] = availableTimeSlots;
-      data['is_garage'] = postData?.type == GarageYardType.garage;
-      if (transactionId != null) {
-        data['transaction_id'] = transactionId;
-      } else {
-        data['transaction_id'] = null;
-      }
+
+      // if (transactionId != null) {
+      data['transaction_id'] = transactionId ?? Uuid().v4();
+      // } else {
+      //   data['transaction_id'] = null;
+      // }
       data['images'] = postData?.attachments?.map((e) => e.id).toList();
+
       final response = await addRepository.addGaragePost(singleItem: data);
 
       state = await response.fold((failure) => FormzState.failure(failure), (
@@ -89,11 +88,6 @@ class AddNotifier extends StateNotifier<FormzState> {
       List<Map<String, dynamic>> availableTimeSlots =
           convertAvailableTimeSlotListToJson(timeSlots);
 
-      // state = const FormzState.loading();
-      List<int> categories = [];
-      for (var element in (postData!.category ?? [])) {
-        categories.add(element.id!);
-      }
       Map<String, dynamic> data = postData!.toJson();
       final postPrice =
           (HelperConstant.priceForEach *
@@ -104,8 +98,9 @@ class AddNotifier extends StateNotifier<FormzState> {
                   ? (postData?.price ?? HelperConstant.fixPrice)
                   : postPrice)
               .toString();
-      data['category'] = categories;
+      data['condition'] = postData?.condition?.id;
       data['price'] = postPrice;
+      data['name'] = postData?.title;
       if (transactionId != null) {
         data['transaction_id'] = transactionId;
       } else {
@@ -116,7 +111,7 @@ class AddNotifier extends StateNotifier<FormzState> {
       data['status'] = 'Active';
       data['available_time_slots'] = availableTimeSlots;
       data['images'] = postData?.attachments?.map((e) => e.id).toList();
-      data['is_garage'] = postData?.type == GarageYardType.garage;
+
       PrintUtils.customLog(jsonEncode(data));
       final response = await addRepository.editGaragePost(
         singleItem: data,

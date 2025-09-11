@@ -23,7 +23,7 @@ class AppConfigs {
   static String getUserEndpoint({required String id}) => '/user/$id/';
   static String profileEndpoint = '/user/profile/';
   static String logout = '/home/user/logout/';
-  static String createSales = 'find/car/sales/';
+  static String createSales = '/find/car/sales/';
   static String payementSales = '/garage/yard/payment/';
   static String getCarCondition = '/find/carsale/conditions/';
 

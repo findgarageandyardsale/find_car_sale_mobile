@@ -10,7 +10,7 @@ class FilterState {
   final DateTime? startDate;
   final DateTime? endDate;
   final bool? isGarage;
-  final List<Category>? selectedCategories;
+  final List<CarCondition>? selectedCategories;
 
   FilterState({
     this.zipCode,
@@ -27,7 +27,7 @@ class FilterState {
     DateTime? startDate,
     bool? isGarage,
     DateTime? endDate,
-    List<Category>? selectedCategories,
+    List<CarCondition>? selectedCategories,
   }) {
     return FilterState(
       zipCode: zipCode ?? this.zipCode,

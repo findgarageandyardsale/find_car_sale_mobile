@@ -10,9 +10,9 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
   Map<String, dynamic> json,
 ) => _$GarageayardImpl(
   id: (json['id'] as num?)?.toInt(),
-  title: json['title'] as String?,
+  title: readValueForTitle(json, 'title') as String?,
   description: json['description'] as String?,
-  price: (json['price'] as num?)?.toInt(),
+  price: convertIntToDouble(json['price']),
   status: $enumDecodeNullable(_$StatusEnumEnumMap, json['status']),
   type: $enumDecodeNullable(_$GarageYardTypeEnumMap, json['type']),
   location:
@@ -25,14 +25,21 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
       (json['available_time_slots'] as List<dynamic>?)
           ?.map((e) => AvailableTimeSlot.fromJson(e as Map<String, dynamic>))
           .toList(),
-  category:
-      (json['category'] as List<dynamic>?)
-          ?.map((e) => Category.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  condition:
+      json['condition'] == null
+          ? null
+          : CarCondition.fromJson(json['condition'] as Map<String, dynamic>),
   attachments:
       (json['images'] as List<dynamic>?)
           ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+  isNew: json['is_new'] as bool?,
+  warranty: json['warranty'] as bool?,
+  miles: convertIntToDouble(json['miles']),
+  model: json['model'] as String?,
+  brand: json['brand'] as String?,
+  year: json['year'] as String?,
+  phoneNumber: json['phone_number'] as String?,
 );
 
 Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
@@ -47,8 +54,15 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
       'promo_code': instance.promoCode,
       'transaction_id': instance.transactionId,
       'available_time_slots': instance.availableTimeSlots,
-      'category': instance.category,
+      'condition': instance.condition,
       'images': instance.attachments,
+      'is_new': instance.isNew,
+      'warranty': instance.warranty,
+      'miles': instance.miles,
+      'model': instance.model,
+      'brand': instance.brand,
+      'year': instance.year,
+      'phone_number': instance.phoneNumber,
     };
 
 const _$StatusEnumEnumMap = {
@@ -83,13 +97,13 @@ Map<String, dynamic> _$$AvailableTimeSlotImplToJson(
   'garage_yard_id': instance.garageYardId,
 };
 
-_$CategoryImpl _$$CategoryImplFromJson(Map<String, dynamic> json) =>
-    _$CategoryImpl(
+_$CarConditionImpl _$$CarConditionImplFromJson(Map<String, dynamic> json) =>
+    _$CarConditionImpl(
       id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String?,
     );
 
-Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
+Map<String, dynamic> _$$CarConditionImplToJson(_$CarConditionImpl instance) =>
     <String, dynamic>{'id': instance.id, 'name': instance.name};
 
 _$LocationModelImpl _$$LocationModelImplFromJson(Map<String, dynamic> json) =>

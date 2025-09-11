@@ -13,9 +13,9 @@ part 'garage_yard_model.g.dart';
 class Garageayard with _$Garageayard {
   const factory Garageayard({
     int? id,
-    String? title,
+    @JsonKey(readValue: readValueForTitle) String? title,
     String? description,
-    int? price,
+    @JsonKey(fromJson: convertIntToDouble) double? price,
     StatusEnum? status,
     GarageYardType? type,
     LocationModel? location,
@@ -23,12 +23,32 @@ class Garageayard with _$Garageayard {
     @JsonKey(name: 'transaction_id') String? transactionId,
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
-    List<Category>? category,
+    CarCondition? condition,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
+    @JsonKey(name: 'is_new') bool? isNew,
+    @JsonKey(name: 'warranty') bool? warranty,
+    @JsonKey(fromJson: convertIntToDouble) double? miles,
+    String? model,
+    String? brand,
+    String? year,
+    @JsonKey(name: 'phone_number') String? phoneNumber,
   }) = _Garageayard;
 
   factory Garageayard.fromJson(Map<String, dynamic> json) =>
       _$GarageayardFromJson(json);
+}
+
+String? readValueForTitle(Map map, String key) =>
+    map[key] ?? map['title'] ?? map['name'];
+
+double? convertIntToDouble(value) {
+  return value == null
+      ? null
+      : (value is int)
+      ? value.toDouble()
+      : (value is String)
+      ? double.parse(value.toString())
+      : value;
 }
 
 // Enum for Garage
@@ -63,11 +83,11 @@ class AvailableTimeSlot with _$AvailableTimeSlot {
 }
 
 @freezed
-class Category with _$Category {
-  const factory Category({int? id, String? name}) = _Category;
+class CarCondition with _$CarCondition {
+  const factory CarCondition({int? id, String? name}) = _CarCondition;
 
-  factory Category.fromJson(Map<String, dynamic> json) =>
-      _$CategoryFromJson(json);
+  factory CarCondition.fromJson(Map<String, dynamic> json) =>
+      _$CarConditionFromJson(json);
 }
 
 @freezed

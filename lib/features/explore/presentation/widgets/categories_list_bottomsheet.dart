@@ -69,9 +69,9 @@ class _CategoriesListBottomsheetState
               return const SizedBox.shrink();
             },
             success: (categories) {
-              List<Category> cats =
+              List<CarCondition> cats =
                   (categories as List<dynamic>)
-                      .map((category) => Category.fromJson(category))
+                      .map((category) => CarCondition.fromJson(category))
                       .toList();
               return cats.isEmpty
                   ? const SizedBox.shrink()
@@ -146,7 +146,7 @@ class _CategoriesListBottomsheetState
 
 class CategorySelectorValue extends StatelessWidget {
   const CategorySelectorValue({super.key, required this.cats});
-  final List<Category> cats;
+  final List<CarCondition> cats;
 
   @override
   Widget build(BuildContext context) {
@@ -159,17 +159,17 @@ class CategorySelectorValue extends StatelessWidget {
               builder: (context, ref, __) {
                 final state = ref.watch(catListProvider);
 
-                bool isSelectedCategory(Category category) {
+                bool isSelectedCategory(CarCondition category) {
                   final state = ref.watch(catListProvider);
                   return (state ?? []).any(
                     (element) => element.id == category.id,
                   );
                 }
 
-                void updateCat(Category cat) {
+                void updateCat(CarCondition cat) {
                   try {
                     // Create a new list of categories to ensure state change
-                    List<Category> categories = List.from(state ?? []);
+                    List<CarCondition> categories = List.from(state ?? []);
 
                     if (categories.contains(cat)) {
                       // Remove the category if it's already selected

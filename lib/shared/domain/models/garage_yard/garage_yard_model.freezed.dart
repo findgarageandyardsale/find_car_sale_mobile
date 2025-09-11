@@ -22,9 +22,11 @@ Garageayard _$GarageayardFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Garageayard {
   int? get id => throw _privateConstructorUsedError;
+  @JsonKey(readValue: readValueForTitle)
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  int? get price => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: convertIntToDouble)
+  double? get price => throw _privateConstructorUsedError;
   StatusEnum? get status => throw _privateConstructorUsedError;
   GarageYardType? get type => throw _privateConstructorUsedError;
   LocationModel? get location => throw _privateConstructorUsedError;
@@ -35,9 +37,20 @@ mixin _$Garageayard {
   @JsonKey(name: 'available_time_slots')
   List<AvailableTimeSlot>? get availableTimeSlots =>
       throw _privateConstructorUsedError;
-  List<Category>? get category => throw _privateConstructorUsedError;
+  CarCondition? get condition => throw _privateConstructorUsedError;
   @JsonKey(name: 'images')
   List<AttachmentModel>? get attachments => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_new')
+  bool? get isNew => throw _privateConstructorUsedError;
+  @JsonKey(name: 'warranty')
+  bool? get warranty => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: convertIntToDouble)
+  double? get miles => throw _privateConstructorUsedError;
+  String? get model => throw _privateConstructorUsedError;
+  String? get brand => throw _privateConstructorUsedError;
+  String? get year => throw _privateConstructorUsedError;
+  @JsonKey(name: 'phone_number')
+  String? get phoneNumber => throw _privateConstructorUsedError;
 
   /// Serializes this Garageayard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,9 +71,9 @@ abstract class $GarageayardCopyWith<$Res> {
   @useResult
   $Res call({
     int? id,
-    String? title,
+    @JsonKey(readValue: readValueForTitle) String? title,
     String? description,
-    int? price,
+    @JsonKey(fromJson: convertIntToDouble) double? price,
     StatusEnum? status,
     GarageYardType? type,
     LocationModel? location,
@@ -68,11 +81,19 @@ abstract class $GarageayardCopyWith<$Res> {
     @JsonKey(name: 'transaction_id') String? transactionId,
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
-    List<Category>? category,
+    CarCondition? condition,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
+    @JsonKey(name: 'is_new') bool? isNew,
+    @JsonKey(name: 'warranty') bool? warranty,
+    @JsonKey(fromJson: convertIntToDouble) double? miles,
+    String? model,
+    String? brand,
+    String? year,
+    @JsonKey(name: 'phone_number') String? phoneNumber,
   });
 
   $LocationModelCopyWith<$Res>? get location;
+  $CarConditionCopyWith<$Res>? get condition;
 }
 
 /// @nodoc
@@ -100,8 +121,15 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
     Object? promoCode = freezed,
     Object? transactionId = freezed,
     Object? availableTimeSlots = freezed,
-    Object? category = freezed,
+    Object? condition = freezed,
     Object? attachments = freezed,
+    Object? isNew = freezed,
+    Object? warranty = freezed,
+    Object? miles = freezed,
+    Object? model = freezed,
+    Object? brand = freezed,
+    Object? year = freezed,
+    Object? phoneNumber = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -124,7 +152,7 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
                 freezed == price
                     ? _value.price
                     : price // ignore: cast_nullable_to_non_nullable
-                        as int?,
+                        as double?,
             status:
                 freezed == status
                     ? _value.status
@@ -155,16 +183,51 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
                     ? _value.availableTimeSlots
                     : availableTimeSlots // ignore: cast_nullable_to_non_nullable
                         as List<AvailableTimeSlot>?,
-            category:
-                freezed == category
-                    ? _value.category
-                    : category // ignore: cast_nullable_to_non_nullable
-                        as List<Category>?,
+            condition:
+                freezed == condition
+                    ? _value.condition
+                    : condition // ignore: cast_nullable_to_non_nullable
+                        as CarCondition?,
             attachments:
                 freezed == attachments
                     ? _value.attachments
                     : attachments // ignore: cast_nullable_to_non_nullable
                         as List<AttachmentModel>?,
+            isNew:
+                freezed == isNew
+                    ? _value.isNew
+                    : isNew // ignore: cast_nullable_to_non_nullable
+                        as bool?,
+            warranty:
+                freezed == warranty
+                    ? _value.warranty
+                    : warranty // ignore: cast_nullable_to_non_nullable
+                        as bool?,
+            miles:
+                freezed == miles
+                    ? _value.miles
+                    : miles // ignore: cast_nullable_to_non_nullable
+                        as double?,
+            model:
+                freezed == model
+                    ? _value.model
+                    : model // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            brand:
+                freezed == brand
+                    ? _value.brand
+                    : brand // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            year:
+                freezed == year
+                    ? _value.year
+                    : year // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            phoneNumber:
+                freezed == phoneNumber
+                    ? _value.phoneNumber
+                    : phoneNumber // ignore: cast_nullable_to_non_nullable
+                        as String?,
           )
           as $Val,
     );
@@ -183,6 +246,20 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
       return _then(_value.copyWith(location: value) as $Val);
     });
   }
+
+  /// Create a copy of Garageayard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CarConditionCopyWith<$Res>? get condition {
+    if (_value.condition == null) {
+      return null;
+    }
+
+    return $CarConditionCopyWith<$Res>(_value.condition!, (value) {
+      return _then(_value.copyWith(condition: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -196,9 +273,9 @@ abstract class _$$GarageayardImplCopyWith<$Res>
   @useResult
   $Res call({
     int? id,
-    String? title,
+    @JsonKey(readValue: readValueForTitle) String? title,
     String? description,
-    int? price,
+    @JsonKey(fromJson: convertIntToDouble) double? price,
     StatusEnum? status,
     GarageYardType? type,
     LocationModel? location,
@@ -206,12 +283,21 @@ abstract class _$$GarageayardImplCopyWith<$Res>
     @JsonKey(name: 'transaction_id') String? transactionId,
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
-    List<Category>? category,
+    CarCondition? condition,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
+    @JsonKey(name: 'is_new') bool? isNew,
+    @JsonKey(name: 'warranty') bool? warranty,
+    @JsonKey(fromJson: convertIntToDouble) double? miles,
+    String? model,
+    String? brand,
+    String? year,
+    @JsonKey(name: 'phone_number') String? phoneNumber,
   });
 
   @override
   $LocationModelCopyWith<$Res>? get location;
+  @override
+  $CarConditionCopyWith<$Res>? get condition;
 }
 
 /// @nodoc
@@ -238,8 +324,15 @@ class __$$GarageayardImplCopyWithImpl<$Res>
     Object? promoCode = freezed,
     Object? transactionId = freezed,
     Object? availableTimeSlots = freezed,
-    Object? category = freezed,
+    Object? condition = freezed,
     Object? attachments = freezed,
+    Object? isNew = freezed,
+    Object? warranty = freezed,
+    Object? miles = freezed,
+    Object? model = freezed,
+    Object? brand = freezed,
+    Object? year = freezed,
+    Object? phoneNumber = freezed,
   }) {
     return _then(
       _$GarageayardImpl(
@@ -262,7 +355,7 @@ class __$$GarageayardImplCopyWithImpl<$Res>
             freezed == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
-                    as int?,
+                    as double?,
         status:
             freezed == status
                 ? _value.status
@@ -293,16 +386,51 @@ class __$$GarageayardImplCopyWithImpl<$Res>
                 ? _value._availableTimeSlots
                 : availableTimeSlots // ignore: cast_nullable_to_non_nullable
                     as List<AvailableTimeSlot>?,
-        category:
-            freezed == category
-                ? _value._category
-                : category // ignore: cast_nullable_to_non_nullable
-                    as List<Category>?,
+        condition:
+            freezed == condition
+                ? _value.condition
+                : condition // ignore: cast_nullable_to_non_nullable
+                    as CarCondition?,
         attachments:
             freezed == attachments
                 ? _value._attachments
                 : attachments // ignore: cast_nullable_to_non_nullable
                     as List<AttachmentModel>?,
+        isNew:
+            freezed == isNew
+                ? _value.isNew
+                : isNew // ignore: cast_nullable_to_non_nullable
+                    as bool?,
+        warranty:
+            freezed == warranty
+                ? _value.warranty
+                : warranty // ignore: cast_nullable_to_non_nullable
+                    as bool?,
+        miles:
+            freezed == miles
+                ? _value.miles
+                : miles // ignore: cast_nullable_to_non_nullable
+                    as double?,
+        model:
+            freezed == model
+                ? _value.model
+                : model // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        brand:
+            freezed == brand
+                ? _value.brand
+                : brand // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        year:
+            freezed == year
+                ? _value.year
+                : year // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        phoneNumber:
+            freezed == phoneNumber
+                ? _value.phoneNumber
+                : phoneNumber // ignore: cast_nullable_to_non_nullable
+                    as String?,
       ),
     );
   }
@@ -313,9 +441,9 @@ class __$$GarageayardImplCopyWithImpl<$Res>
 class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
   const _$GarageayardImpl({
     this.id,
-    this.title,
+    @JsonKey(readValue: readValueForTitle) this.title,
     this.description,
-    this.price,
+    @JsonKey(fromJson: convertIntToDouble) this.price,
     this.status,
     this.type,
     this.location,
@@ -323,10 +451,16 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     @JsonKey(name: 'transaction_id') this.transactionId,
     @JsonKey(name: 'available_time_slots')
     final List<AvailableTimeSlot>? availableTimeSlots,
-    final List<Category>? category,
+    this.condition,
     @JsonKey(name: 'images') final List<AttachmentModel>? attachments,
+    @JsonKey(name: 'is_new') this.isNew,
+    @JsonKey(name: 'warranty') this.warranty,
+    @JsonKey(fromJson: convertIntToDouble) this.miles,
+    this.model,
+    this.brand,
+    this.year,
+    @JsonKey(name: 'phone_number') this.phoneNumber,
   }) : _availableTimeSlots = availableTimeSlots,
-       _category = category,
        _attachments = attachments;
 
   factory _$GarageayardImpl.fromJson(Map<String, dynamic> json) =>
@@ -335,11 +469,13 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
   @override
   final int? id;
   @override
+  @JsonKey(readValue: readValueForTitle)
   final String? title;
   @override
   final String? description;
   @override
-  final int? price;
+  @JsonKey(fromJson: convertIntToDouble)
+  final double? price;
   @override
   final StatusEnum? status;
   @override
@@ -364,16 +500,8 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     return EqualUnmodifiableListView(value);
   }
 
-  final List<Category>? _category;
   @override
-  List<Category>? get category {
-    final value = _category;
-    if (value == null) return null;
-    if (_category is EqualUnmodifiableListView) return _category;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
+  final CarCondition? condition;
   final List<AttachmentModel>? _attachments;
   @override
   @JsonKey(name: 'images')
@@ -386,8 +514,27 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
   }
 
   @override
+  @JsonKey(name: 'is_new')
+  final bool? isNew;
+  @override
+  @JsonKey(name: 'warranty')
+  final bool? warranty;
+  @override
+  @JsonKey(fromJson: convertIntToDouble)
+  final double? miles;
+  @override
+  final String? model;
+  @override
+  final String? brand;
+  @override
+  final String? year;
+  @override
+  @JsonKey(name: 'phone_number')
+  final String? phoneNumber;
+
+  @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, category: $category, attachments: $attachments)';
+    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, condition: $condition, attachments: $attachments, isNew: $isNew, warranty: $warranty, miles: $miles, model: $model, brand: $brand, year: $year, phoneNumber: $phoneNumber)';
   }
 
   @override
@@ -405,8 +552,15 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
       ..add(DiagnosticsProperty('promoCode', promoCode))
       ..add(DiagnosticsProperty('transactionId', transactionId))
       ..add(DiagnosticsProperty('availableTimeSlots', availableTimeSlots))
-      ..add(DiagnosticsProperty('category', category))
-      ..add(DiagnosticsProperty('attachments', attachments));
+      ..add(DiagnosticsProperty('condition', condition))
+      ..add(DiagnosticsProperty('attachments', attachments))
+      ..add(DiagnosticsProperty('isNew', isNew))
+      ..add(DiagnosticsProperty('warranty', warranty))
+      ..add(DiagnosticsProperty('miles', miles))
+      ..add(DiagnosticsProperty('model', model))
+      ..add(DiagnosticsProperty('brand', brand))
+      ..add(DiagnosticsProperty('year', year))
+      ..add(DiagnosticsProperty('phoneNumber', phoneNumber));
   }
 
   @override
@@ -431,16 +585,26 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
               other._availableTimeSlots,
               _availableTimeSlots,
             ) &&
-            const DeepCollectionEquality().equals(other._category, _category) &&
+            (identical(other.condition, condition) ||
+                other.condition == condition) &&
             const DeepCollectionEquality().equals(
               other._attachments,
               _attachments,
-            ));
+            ) &&
+            (identical(other.isNew, isNew) || other.isNew == isNew) &&
+            (identical(other.warranty, warranty) ||
+                other.warranty == warranty) &&
+            (identical(other.miles, miles) || other.miles == miles) &&
+            (identical(other.model, model) || other.model == model) &&
+            (identical(other.brand, brand) || other.brand == brand) &&
+            (identical(other.year, year) || other.year == year) &&
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     title,
@@ -452,9 +616,16 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     promoCode,
     transactionId,
     const DeepCollectionEquality().hash(_availableTimeSlots),
-    const DeepCollectionEquality().hash(_category),
+    condition,
     const DeepCollectionEquality().hash(_attachments),
-  );
+    isNew,
+    warranty,
+    miles,
+    model,
+    brand,
+    year,
+    phoneNumber,
+  ]);
 
   /// Create a copy of Garageayard
   /// with the given fields replaced by the non-null parameter values.
@@ -473,9 +644,9 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
 abstract class _Garageayard implements Garageayard {
   const factory _Garageayard({
     final int? id,
-    final String? title,
+    @JsonKey(readValue: readValueForTitle) final String? title,
     final String? description,
-    final int? price,
+    @JsonKey(fromJson: convertIntToDouble) final double? price,
     final StatusEnum? status,
     final GarageYardType? type,
     final LocationModel? location,
@@ -483,8 +654,15 @@ abstract class _Garageayard implements Garageayard {
     @JsonKey(name: 'transaction_id') final String? transactionId,
     @JsonKey(name: 'available_time_slots')
     final List<AvailableTimeSlot>? availableTimeSlots,
-    final List<Category>? category,
+    final CarCondition? condition,
     @JsonKey(name: 'images') final List<AttachmentModel>? attachments,
+    @JsonKey(name: 'is_new') final bool? isNew,
+    @JsonKey(name: 'warranty') final bool? warranty,
+    @JsonKey(fromJson: convertIntToDouble) final double? miles,
+    final String? model,
+    final String? brand,
+    final String? year,
+    @JsonKey(name: 'phone_number') final String? phoneNumber,
   }) = _$GarageayardImpl;
 
   factory _Garageayard.fromJson(Map<String, dynamic> json) =
@@ -493,11 +671,13 @@ abstract class _Garageayard implements Garageayard {
   @override
   int? get id;
   @override
+  @JsonKey(readValue: readValueForTitle)
   String? get title;
   @override
   String? get description;
   @override
-  int? get price;
+  @JsonKey(fromJson: convertIntToDouble)
+  double? get price;
   @override
   StatusEnum? get status;
   @override
@@ -514,10 +694,28 @@ abstract class _Garageayard implements Garageayard {
   @JsonKey(name: 'available_time_slots')
   List<AvailableTimeSlot>? get availableTimeSlots;
   @override
-  List<Category>? get category;
+  CarCondition? get condition;
   @override
   @JsonKey(name: 'images')
   List<AttachmentModel>? get attachments;
+  @override
+  @JsonKey(name: 'is_new')
+  bool? get isNew;
+  @override
+  @JsonKey(name: 'warranty')
+  bool? get warranty;
+  @override
+  @JsonKey(fromJson: convertIntToDouble)
+  double? get miles;
+  @override
+  String? get model;
+  @override
+  String? get brand;
+  @override
+  String? get year;
+  @override
+  @JsonKey(name: 'phone_number')
+  String? get phoneNumber;
 
   /// Create a copy of Garageayard
   /// with the given fields replaced by the non-null parameter values.
@@ -840,44 +1038,46 @@ abstract class _AvailableTimeSlot implements AvailableTimeSlot {
       throw _privateConstructorUsedError;
 }
 
-Category _$CategoryFromJson(Map<String, dynamic> json) {
-  return _Category.fromJson(json);
+CarCondition _$CarConditionFromJson(Map<String, dynamic> json) {
+  return _CarCondition.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Category {
+mixin _$CarCondition {
   int? get id => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
 
-  /// Serializes this Category to a JSON map.
+  /// Serializes this CarCondition to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Category
+  /// Create a copy of CarCondition
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $CategoryCopyWith<Category> get copyWith =>
+  $CarConditionCopyWith<CarCondition> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $CategoryCopyWith<$Res> {
-  factory $CategoryCopyWith(Category value, $Res Function(Category) then) =
-      _$CategoryCopyWithImpl<$Res, Category>;
+abstract class $CarConditionCopyWith<$Res> {
+  factory $CarConditionCopyWith(
+    CarCondition value,
+    $Res Function(CarCondition) then,
+  ) = _$CarConditionCopyWithImpl<$Res, CarCondition>;
   @useResult
   $Res call({int? id, String? name});
 }
 
 /// @nodoc
-class _$CategoryCopyWithImpl<$Res, $Val extends Category>
-    implements $CategoryCopyWith<$Res> {
-  _$CategoryCopyWithImpl(this._value, this._then);
+class _$CarConditionCopyWithImpl<$Res, $Val extends CarCondition>
+    implements $CarConditionCopyWith<$Res> {
+  _$CarConditionCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Category
+  /// Create a copy of CarCondition
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -901,33 +1101,33 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
 }
 
 /// @nodoc
-abstract class _$$CategoryImplCopyWith<$Res>
-    implements $CategoryCopyWith<$Res> {
-  factory _$$CategoryImplCopyWith(
-    _$CategoryImpl value,
-    $Res Function(_$CategoryImpl) then,
-  ) = __$$CategoryImplCopyWithImpl<$Res>;
+abstract class _$$CarConditionImplCopyWith<$Res>
+    implements $CarConditionCopyWith<$Res> {
+  factory _$$CarConditionImplCopyWith(
+    _$CarConditionImpl value,
+    $Res Function(_$CarConditionImpl) then,
+  ) = __$$CarConditionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int? id, String? name});
 }
 
 /// @nodoc
-class __$$CategoryImplCopyWithImpl<$Res>
-    extends _$CategoryCopyWithImpl<$Res, _$CategoryImpl>
-    implements _$$CategoryImplCopyWith<$Res> {
-  __$$CategoryImplCopyWithImpl(
-    _$CategoryImpl _value,
-    $Res Function(_$CategoryImpl) _then,
+class __$$CarConditionImplCopyWithImpl<$Res>
+    extends _$CarConditionCopyWithImpl<$Res, _$CarConditionImpl>
+    implements _$$CarConditionImplCopyWith<$Res> {
+  __$$CarConditionImplCopyWithImpl(
+    _$CarConditionImpl _value,
+    $Res Function(_$CarConditionImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of Category
+  /// Create a copy of CarCondition
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({Object? id = freezed, Object? name = freezed}) {
     return _then(
-      _$CategoryImpl(
+      _$CarConditionImpl(
         id:
             freezed == id
                 ? _value.id
@@ -945,11 +1145,11 @@ class __$$CategoryImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$CategoryImpl with DiagnosticableTreeMixin implements _Category {
-  const _$CategoryImpl({this.id, this.name});
+class _$CarConditionImpl with DiagnosticableTreeMixin implements _CarCondition {
+  const _$CarConditionImpl({this.id, this.name});
 
-  factory _$CategoryImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CategoryImplFromJson(json);
+  factory _$CarConditionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CarConditionImplFromJson(json);
 
   @override
   final int? id;
@@ -958,14 +1158,14 @@ class _$CategoryImpl with DiagnosticableTreeMixin implements _Category {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Category(id: $id, name: $name)';
+    return 'CarCondition(id: $id, name: $name)';
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('type', 'Category'))
+      ..add(DiagnosticsProperty('type', 'CarCondition'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('name', name));
   }
@@ -974,7 +1174,7 @@ class _$CategoryImpl with DiagnosticableTreeMixin implements _Category {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$CategoryImpl &&
+            other is _$CarConditionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name));
   }
@@ -983,36 +1183,37 @@ class _$CategoryImpl with DiagnosticableTreeMixin implements _Category {
   @override
   int get hashCode => Object.hash(runtimeType, id, name);
 
-  /// Create a copy of Category
+  /// Create a copy of CarCondition
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$CategoryImplCopyWith<_$CategoryImpl> get copyWith =>
-      __$$CategoryImplCopyWithImpl<_$CategoryImpl>(this, _$identity);
+  _$$CarConditionImplCopyWith<_$CarConditionImpl> get copyWith =>
+      __$$CarConditionImplCopyWithImpl<_$CarConditionImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CategoryImplToJson(this);
+    return _$$CarConditionImplToJson(this);
   }
 }
 
-abstract class _Category implements Category {
-  const factory _Category({final int? id, final String? name}) = _$CategoryImpl;
+abstract class _CarCondition implements CarCondition {
+  const factory _CarCondition({final int? id, final String? name}) =
+      _$CarConditionImpl;
 
-  factory _Category.fromJson(Map<String, dynamic> json) =
-      _$CategoryImpl.fromJson;
+  factory _CarCondition.fromJson(Map<String, dynamic> json) =
+      _$CarConditionImpl.fromJson;
 
   @override
   int? get id;
   @override
   String? get name;
 
-  /// Create a copy of Category
+  /// Create a copy of CarCondition
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CategoryImplCopyWith<_$CategoryImpl> get copyWith =>
+  _$$CarConditionImplCopyWith<_$CarConditionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

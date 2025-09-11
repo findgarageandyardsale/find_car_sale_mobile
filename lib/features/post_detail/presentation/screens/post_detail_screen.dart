@@ -284,22 +284,23 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Spacing.sizedBoxH_16(),
-                        Wrap(
-                          runSpacing: 12.0,
-                          spacing: 6.0,
-                          children:
-                              garageayard.category
-                                  ?.map(
-                                    (e) => DescriptionChip(
-                                      isGarage: isGarage,
-                                      text: e.name ?? '',
-                                    ),
-                                  )
-                                  .toList() ??
-                              [],
+                        DescriptionChip(
+                          isGarage: isGarage,
+                          text: garageayard.condition?.name ?? '',
                         ),
+                        // Wrap(
+                        //   runSpacing: 12.0,
+                        //   spacing: 6.0,
+                        //   children:
+                        //       garageayard.category
+                        //           ?.map(
+                        //             (e) => ,
+                        //           )
+                        //           .toList() ??
+                        //       [],
+                        // ),
                         Spacing.sizedBoxH_16(),
-                        SizedBox(
+                        /* SizedBox(
                           height: 320,
                           child: GoogleMap(
                             mapType: MapType.terrain,
@@ -323,7 +324,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                               zoom: 15,
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
