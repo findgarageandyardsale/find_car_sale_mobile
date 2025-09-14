@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:findcarsale/attachment_builder/provider/custom_attachment_provider.dart';
 import 'package:findcarsale/features/add_edit_sale/presentation/widgets/category_selector.dart';
+import 'package:findcarsale/features/add_edit_sale/presentation/widgets/year_picker.dart';
 import 'package:findcarsale/features/authentication/presentation/widgets/auth_field.dart';
 import 'package:findcarsale/services/capitalize_word_formatter_service.dart';
 import 'package:findcarsale/shared/constants/spacing.dart';
@@ -57,6 +58,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
   final TextEditingController promoCodeController = TextEditingController();
   final TextEditingController modelController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
+  final TextEditingController yearController = TextEditingController();
   final TextEditingController milesController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final formKey = GlobalKey<FormBuilderState>();
@@ -79,6 +81,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
     milesController.text = widget.garageayard?.miles?.toString() ?? '';
     modelController.text = widget.garageayard?.model ?? '';
     brandController.text = widget.garageayard?.brand ?? '';
+    yearController.text = widget.garageayard?.year?.toString() ?? '';
     phoneNumberController.text = widget.garageayard?.phoneNumber ?? '';
     promoCodeController.text = widget.garageayard?.promoCode ?? '';
 
@@ -456,7 +459,8 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                         });
                       }
                       currentData = convertEmptyStringsToNull(currentData);
-
+                      PrintUtils.customLog(currentData.toString());
+                      PrintUtils.customLog('-------////----------------');
                       ref
                           .read(addDataNotifierProvider.notifier)
                           .manageWholeData(currentData);
@@ -472,7 +476,12 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                         if (widget.garageayard != null) {
                           ref
                               .read(addNotifierProvider.notifier)
-                              .updateGarageSale(transactionId: null);
+                              .updateGarageSale(
+                                transactionId:
+                                    HelperConstant.isPaymentRequired
+                                        ? null
+                                        : Uuid().v4(),
+                              );
                         } else {
                           ref
                               .read(addNotifierProvider.notifier)
@@ -612,6 +621,18 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       // Apply the custom TextInputFormatter
                     ),
                     Spacing.sizedBoxH_20(),
+                    CustomYearPicker(
+                      name: 'year',
+                      hintText: 'Year*',
+                      labelText: 'Year*',
+                      validator: [
+                        FormBuilderValidators.required(
+                          errorText: 'Year cannot be empty.',
+                        ),
+                      ],
+                      controller: yearController,
+                    ),
+                    Spacing.sizedBoxH_20(),
                     AuthField(
                       name: 'miles',
                       hintText: 'Current Mileage*',
@@ -675,55 +696,53 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                           children: [
                             TitleHead(
                               title: 'Condition',
-                              // subtitle:
-                              //     (addCatdata?.category ?? []).isEmpty
-                              //         ? null
-                              //         : '${(addCatdata?.category ?? []).length} Selected',
-                              clearWidget: TextButton.icon(
-                                // padding: EdgeInsets.zero,
-                                onPressed: () {
-                                  final controller = TextEditingController();
-                                  primaryBottomSheet(
-                                    context,
-                                    child: Column(
-                                      children: [
-                                        AuthField(
-                                          autoFocus: true,
-                                          name: 'condition',
-                                          hintText: 'Condition',
-                                          labelText: 'Condition',
-                                          controller: controller,
-                                        ),
-                                        Spacing.sizedBoxH_12(),
-                                        ActionButton(
-                                          width: double.infinity,
-                                          label: 'Add Condition',
-                                          onPressed: () {
-                                            if (controller.text.isNotEmpty) {
-                                              ref
-                                                  .read(
-                                                    addCarConditionNotifierProvider
-                                                        .notifier,
-                                                  )
-                                                  .addCateggory(
-                                                    controller.text,
-                                                  );
 
-                                              Navigator.of(context).pop();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.add),
-                                label: Text(
-                                  'Add Condition',
-                                  style: Theme.of(context).textTheme.labelLarge
-                                      ?.copyWith(color: AppColors.primary),
-                                ),
-                              ),
+                              // clearWidget:
+                              //  TextButton.icon(
+                              //   // padding: EdgeInsets.zero,
+                              //   onPressed: () {
+                              //     final controller = TextEditingController();
+                              //     primaryBottomSheet(
+                              //       context,
+                              //       child: Column(
+                              //         children: [
+                              //           AuthField(
+                              //             autoFocus: true,
+                              //             name: 'condition',
+                              //             hintText: 'Condition',
+                              //             labelText: 'Condition',
+                              //             controller: controller,
+                              //           ),
+                              //           Spacing.sizedBoxH_12(),
+                              //           ActionButton(
+                              //             width: double.infinity,
+                              //             label: 'Add Condition',
+                              //             onPressed: () {
+                              //               if (controller.text.isNotEmpty) {
+                              //                 ref
+                              //                     .read(
+                              //                       addCarConditionNotifierProvider
+                              //                           .notifier,
+                              //                     )
+                              //                     .addCateggory(
+                              //                       controller.text,
+                              //                     );
+
+                              //                 Navigator.of(context).pop();
+                              //               }
+                              //             },
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     );
+                              //   },
+                              //   icon: const Icon(Icons.add),
+                              //   label: Text(
+                              //     'Add Condition',
+                              //     style: Theme.of(context).textTheme.labelLarge
+                              //         ?.copyWith(color: AppColors.primary),
+                              //   ),
+                              // ),
                             ),
                             CarConditionSelector(cats: cats, isSingle: true),
                             Spacing.sizedBoxH_20(),
@@ -905,7 +924,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                           errorText: 'Zip Code cannot be empty.',
                         ),
                       ]),
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                       onChanged: (value) {},
                       controller: zipCodeController,
                     ),

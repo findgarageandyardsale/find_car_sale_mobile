@@ -4,17 +4,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class HelperConstant {
   static bool get isForTest => dotenv.env['APP_ENVIRONMENT'] == 'test';
 
-  static String get stripeToken => isForTest
-      ? dotenv.env['STRIPE_TEST_SECRET_KEY'] ?? ''
-      : dotenv.env['STRIPE_LIVE_SECRET_KEY'] ?? '';
+  static String get stripeToken =>
+      isForTest
+          ? dotenv.env['STRIPE_TEST_SECRET_KEY'] ?? ''
+          : dotenv.env['STRIPE_LIVE_SECRET_KEY'] ?? '';
 
-  static String get publishableStripeKey => isForTest
-      ? dotenv.env['STRIPE_TEST_PUBLISHABLE_KEY'] ?? ''
-      : dotenv.env['STRIPE_LIVE_PUBLISHABLE_KEY'] ?? '';
+  static String get publishableStripeKey =>
+      isForTest
+          ? dotenv.env['STRIPE_TEST_PUBLISHABLE_KEY'] ?? ''
+          : dotenv.env['STRIPE_LIVE_PUBLISHABLE_KEY'] ?? '';
 
-  static String get merchantIdentifier => isForTest
-      ? dotenv.env['STRIPE_TEST_MERCHANT_ID'] ?? ''
-      : dotenv.env['STRIPE_LIVE_MERCHANT_ID'] ?? '';
+  static String get merchantIdentifier =>
+      isForTest
+          ? dotenv.env['STRIPE_TEST_MERCHANT_ID'] ?? ''
+          : dotenv.env['STRIPE_LIVE_MERCHANT_ID'] ?? '';
 
   static String playStoreAppStoreID =
       Platform.isAndroid
@@ -29,4 +32,6 @@ class HelperConstant {
 
   static int priceForEach = 5;
   static String fixPrice = '5';
+
+  static bool isPaymentRequired = false;
 }

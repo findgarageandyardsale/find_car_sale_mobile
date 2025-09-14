@@ -48,10 +48,11 @@ class AddDataNotifier extends StateNotifier<Garageayard?> {
         attachments: state?.attachments ?? [],
         model: data['model'],
         brand: data['brand'],
-        miles: data['miles'],
+        miles: double.tryParse(data['miles']),
         warranty: data['warranty'],
         isNew: data['is_new'],
         phoneNumber: data['phone_number'],
+        year: data['year'],
       );
       state = garageayard;
     } catch (e) {

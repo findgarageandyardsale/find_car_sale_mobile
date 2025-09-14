@@ -3,6 +3,9 @@
         android:label="Find Car Sale"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+         <meta-data android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyAZB72tIb4AfeKvzjUf6ZYHbC78EFcSYoc"/>
+      
         <activity
             android:name=".MainActivity"
             android:exported="true"

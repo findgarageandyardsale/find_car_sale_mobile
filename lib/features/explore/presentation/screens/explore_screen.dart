@@ -161,14 +161,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 (filterState.selectedCategories ?? []).isEmpty);
           }
 
-        case FilterEnum.date:
-          {
-            return filterState.endDate != null;
-          }
         case FilterEnum.distance:
           return filterState.radius != null;
 
-        case FilterEnum.categories:
+        case FilterEnum.condition:
           return (filterState.selectedCategories ?? []).isNotEmpty;
       }
     }
@@ -184,168 +180,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             }
           }
 
-        case FilterEnum.date:
-          {
-            primaryBottomSheet(
-              padding: EdgeInsets.zero,
-              context,
-              child: Column(
-                children: [
-                  if (selectedDateFilter != null)
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: TextIconButtonWidget(
-                        onPressed: () {
-                          ref
-                              .read(filterNotifierProvider.notifier)
-                              .toDateInitalState();
-                          selectedDateFilter = null;
-
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: DateFilter.values.length,
-                    itemBuilder: (context, index) {
-                      final endList = index == DateFilter.values.length - 1;
-                      if (endList) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 30,
-                          ),
-                          title: Text(
-                            'Custom range',
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(color: AppColors.primary),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            showDateRangePickerDialog();
-                          },
-                        );
-                      }
-                      //          if (DateFilter.values[index] == selectedDateFilter.value) {
-                      //   Navigator.pop(context);
-                      // }
-
-                      DateTime? sDate, eDate;
-                      return RadioListTile(
-                        title: Text(DateFilter.values[index].name),
-                        value: DateFilter.values[index],
-                        groupValue: (endList) ? null : selectedDateFilter,
-                        onChanged: (dateFilter) {
-                          switch (dateFilter) {
-                            case DateFilter.today:
-                              sDate = DateTime.now();
-                              eDate = DateTime.now();
-                              break;
-                            case DateFilter.toWeek:
-                              sDate = DateTime.now().subtract(
-                                const Duration(days: 7),
-                              );
-                              eDate = DateTime.now();
-                              break;
-                            case DateFilter.toMonth:
-                              sDate = DateTime.now().subtract(
-                                const Duration(days: 30),
-                              );
-                              eDate = DateTime.now();
-                              break;
-                            case DateFilter.customRange:
-                              showDateRangePickerDialog();
-                              break;
-                            case null:
-                              sDate = null;
-                              eDate = null;
-                              break;
-                          }
-                          Navigator.pop(context);
-                          ref
-                              .read(filterNotifierProvider.notifier)
-                              .updateState(startDate: sDate, endDate: eDate);
-                          selectedDateFilter = dateFilter!;
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              /* Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RadioListTile(
-                    value: false,
-                    groupValue: 'group1',
-                    onChanged: (val) {
-                      ref.read(filterNotifierProvider.notifier).updateState(
-                          startDate: DateTime.now(), endDate: null);
-                    },
-                    title: const Text('Today'),
-                  ),
-                  RadioListTile(
-                    value: false,
-                    groupValue: 'group1',
-                    onChanged: (val) {
-                      Navigator.of(context).pop();
-                      ref.read(filterNotifierProvider.notifier).updateState(
-                            startDate: DateTime.now(),
-                            endDate: DateTime.now().subtract(
-                              const Duration(days: 6),
-                            ),
-                          );
-                    },
-                    title: const Text('This week'),
-                  ),
-                  RadioListTile(
-                    value: false,
-                    groupValue: 'group1',
-                    onChanged: (val) {
-                      Navigator.of(context).pop();
-
-                      ref.read(filterNotifierProvider.notifier).updateState(
-                            startDate: DateTime.now(),
-                            endDate: DateTime.now().subtract(
-                              const Duration(days: 30),
-                            ),
-                          );
-                    },
-                    title: const Text('This month'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextButton(
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        showDateRangePickerDialog();
-                      },
-                      child: Text(
-                        'Custom Range',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(color: AppColors.primary),
-                      ),
-                    ),
-                  ),
-                  Spacing.sizedBoxH_16()
-
-                  
-                ],
-              ),
-              */
-            );
-          }
         case FilterEnum.distance:
           {
             showSliderDialog(context);
           }
 
-        case FilterEnum.categories:
+        case FilterEnum.condition:
           {
             //
 
@@ -387,6 +227,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Spacing.sizedBoxH_16(),
             if (listView)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -394,7 +235,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   name: 'search',
                   hintText: 'Search',
                   controller: searchController,
-                  fillColor: AppColors.surfaceContainerLow,
+                  // fillColor: AppColors.surfaceContainerLow,
+                  fillColor: AppColors.white,
                   onChanged: (val) => searchAction(),
                   suffixIcon: IconButton(
                     icon: Icon(

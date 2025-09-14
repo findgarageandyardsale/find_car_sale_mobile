@@ -54,7 +54,8 @@ class AddNotifier extends StateNotifier<FormzState> {
       data['available_time_slots'] = availableTimeSlots;
 
       // if (transactionId != null) {
-      data['transaction_id'] = transactionId ?? Uuid().v4();
+      data['transaction_id'] =
+          HelperConstant.isPaymentRequired ? transactionId : Uuid().v4();
       // } else {
       //   data['transaction_id'] = null;
       // }
@@ -101,11 +102,16 @@ class AddNotifier extends StateNotifier<FormzState> {
       data['condition'] = postData?.condition?.id;
       data['price'] = postPrice;
       data['name'] = postData?.title;
-      if (transactionId != null) {
-        data['transaction_id'] = transactionId;
-      } else {
-        data['transaction_id'] = null;
-      }
+
+      data['transaction_id'] =
+          HelperConstant.isPaymentRequired
+              ? transactionId
+              : transactionId ?? Uuid().v4();
+      // if (transactionId != null) {
+      //   data['transaction_id'] = transactionId;
+      // } else {
+      //   data['transaction_id'] = null;
+      // }
       //Just for testing
       // data['status'] = 'Expired';
       data['status'] = 'Active';

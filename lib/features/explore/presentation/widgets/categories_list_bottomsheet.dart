@@ -42,7 +42,7 @@ class _CategoriesListBottomsheetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleHead(
-            title: 'Category',
+            title: 'Condition',
             subtitle:
                 (catList ?? []).isEmpty
                     ? null
