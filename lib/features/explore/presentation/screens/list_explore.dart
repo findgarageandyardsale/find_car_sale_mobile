@@ -1,3 +1,4 @@
+import 'package:findcarsale/dummy_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/features/explore/presentation/providers/filter_state_provider.dart';
@@ -17,57 +18,73 @@ class ListExplore extends ConsumerWidget {
     final state = ref.watch(exploreNotifierProvider);
     final filterstate = ref.watch(filterNotifierProvider);
 
+    final list = DummyDataService.getDummyGarageYardList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Flexible(
-          child:
-              state.garageYardList.isEmpty
-                  ? SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 50,
-                      ), // Optional for spacing
-                      child: Center(
-                        child: NoData(
-                          fromAdd: false,
-                          matchingValueText:
-                              filterstate.radius != null
-                                  ? ' with ${filterstate.radius} miles'
-                                  : null,
-                        ),
-                      ),
-                    ),
-                  )
-                  : Scrollbar(
-                    controller: scrollController,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      controller: scrollController,
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      itemBuilder: (context, index) {
-                        return PostSingleItem(
-                          singlePost: state.garageYardList[index],
-                        );
-                      },
-                      itemCount: state.garageYardList.length,
-                    ),
-                  ),
-        ),
-        if (state.state == ExploreConcreteState.fetchingMore)
-          const Flexible(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: MainViewShimmer(),
-            ),
+        Scrollbar(
+          controller: scrollController,
+          child: ListView.builder(
+            shrinkWrap: true,
+            controller: scrollController,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            itemBuilder: (context, index) {
+              return PostSingleItem(singlePost: list[index]);
+            },
+            itemCount: list.length,
           ),
+        ),
+        // Flexible(
+        //   child:
+        //       state.garageYardList.isEmpty
+        //           ? SingleChildScrollView(
+        //             keyboardDismissBehavior:
+        //                 ScrollViewKeyboardDismissBehavior.onDrag,
+        //             physics: const AlwaysScrollableScrollPhysics(),
+        //             child: Padding(
+        //               padding: const EdgeInsets.only(
+        //                 top: 50,
+        //               ), // Optional for spacing
+        //               child: Center(
+        //                 child: NoData(
+        //                   fromAdd: false,
+        //                   matchingValueText:
+        //                       filterstate.radius != null
+        //                           ? ' with ${filterstate.radius} miles'
+        //                           : null,
+        //                 ),
+        //               ),
+        //             ),
+        //           )
+        //           : Scrollbar(
+        //             controller: scrollController,
+        //             child: ListView.builder(
+        //               shrinkWrap: true,
+        //               controller: scrollController,
+        //               keyboardDismissBehavior:
+        //                   ScrollViewKeyboardDismissBehavior.onDrag,
+        //               physics: const AlwaysScrollableScrollPhysics(),
+        //               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //               itemBuilder: (context, index) {
+        //                 return PostSingleItem(
+        //                   singlePost: state.garageYardList[index],
+        //                 );
+        //               },
+        //               itemCount: state.garageYardList.length,
+        //             ),
+        //           ),
+        // ),
+        // if (state.state == ExploreConcreteState.fetchingMore)
+        //   const Flexible(
+        //     child: Padding(
+        //       padding: EdgeInsets.symmetric(horizontal: 16.0),
+        //       child: MainViewShimmer(),
+        //     ),
+        //   ),
       ],
     );
   }

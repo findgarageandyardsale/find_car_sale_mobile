@@ -9,7 +9,7 @@ import '../constants/spacing.dart';
 import '../theme/app_colors.dart';
 import '../utils/app_utils.dart';
 import 'file_image_builder.dart';
-import 'status_chip.dart';
+import 'car_info_chip.dart';
 import 'timer_text.dart';
 
 class PostSingleItem extends StatelessWidget {
@@ -84,7 +84,13 @@ class PostSingleItem extends StatelessWidget {
                   ),
                   Spacing.sizedBoxH_08(),
                   if (singlePost?.status != null)
-                    StatusChip(status: (singlePost?.status)!),
+                    CarInfoChip(
+                      status: (singlePost?.status)!,
+                      brand: singlePost?.brand,
+                      model: singlePost?.model,
+                      year: singlePost?.year,
+                      warranty: singlePost?.warranty,
+                    ),
                   Spacing.sizedBoxH_08(),
                   if ((singlePost?.availableTimeSlots ?? []).isNotEmpty)
                     TimerText(
