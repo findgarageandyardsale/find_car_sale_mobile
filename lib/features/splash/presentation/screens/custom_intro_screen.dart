@@ -88,8 +88,6 @@ class _CustomIntroScreenState extends State<CustomIntroScreen> {
                     children: [
                       // Small image
                       Container(
-                        height: 200,
-                        width: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [

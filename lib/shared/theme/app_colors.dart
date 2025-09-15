@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Blue Colors
-  /// Primary Blue: blue-600 (#2563eb) - Main brand color for buttons and interactive elements
-  static const Color primary = Color(0xff2563eb);
+  // Primary Red Colors
+  /// Primary Red: red-600 (#dc2626) - Main brand color for buttons and interactive elements
+  static const Color primary = Color(0xffdc2626);
 
-  /// Dark Blue: blue-900 (#1e3a8a) - For headings and important text
-  static const Color secondary = Color(0xff1e3a8a);
+  /// Dark Red: red-900 (#7f1d1d) - For headings and important text
+  static const Color secondary = Color(0xff7f1d1d);
 
-  /// Light Blue: blue-50 (#eff6ff) - Light blue backgrounds for sections
-  static const Color background = Color(0xffeff6ff);
+  /// Light Red: red-50 (#fef2f2) - Light red backgrounds for sections
+  static const Color background = Color(0xfffef2f2);
 
-  /// Medium Blue: blue-700 (#1d4ed8) - Hover states and secondary actions
-  static const Color accent = Color(0xff1d4ed8);
+  /// Medium Red: red-700 (#b91c1c) - Hover states and secondary actions
+  static const Color accent = Color(0xffb91c1c);
 
-  // Additional Blue Shades
-  /// Blue-100 for very light backgrounds
-  static const Color surfaceLight = Color(0xffdbeafe);
+  // Additional Red Shades
+  /// Red-100 for very light backgrounds
+  static const Color surfaceLight = Color(0xfffecaca);
 
-  /// Blue-200 for borders and dividers
-  static const Color primaryBorder = Color(0xffbfdbfe);
+  /// Red-200 for borders and dividers
+  static const Color primaryBorder = Color(0xfffca5a5);
 
-  /// Blue-300 for disabled states
-  static const Color secondaryBorder = Color(0xff93c5fd);
+  /// Red-300 for disabled states
+  static const Color secondaryBorder = Color(0xfff87171);
 
-  /// Blue-400 for secondary text
-  static const Color lightGrey = Color(0xff60a5fa);
+  /// Red-400 for secondary text
+  static const Color lightGrey = Color(0xfff87171);
 
-  /// Blue-500 for medium emphasis
-  static const Color tertiary = Color(0xff3b82f6);
+  /// Red-500 for medium emphasis
+  static const Color tertiary = Color(0xffef4444);
 
-  /// Blue-800 for dark text
-  static const Color darkText = Color(0xff1e40af);
+  /// Red-800 for dark text
+  static const Color darkText = Color(0xff991b1b);
 
   // Purple Colors for Gradients
   /// Purple-600 for gradients
@@ -79,5 +79,6 @@ class AppColors {
   static const Color surfaceContainerLow = background;
   static const Color softColor = background;
   static const Color lightPrimaryColor = surfaceLight;
-  static const Color blue = primary;
+  static const Color blue =
+      primary; // Now red, but keeping name for compatibility
 }
