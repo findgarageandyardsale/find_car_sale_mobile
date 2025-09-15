@@ -166,6 +166,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
         case FilterEnum.condition:
           return (filterState.selectedCategories ?? []).isNotEmpty;
+        case FilterEnum.date:
+          {
+            return filterState.endDate != null;
+          }
       }
     }
 
@@ -194,6 +198,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               context,
               child: const CategoriesListBottomsheet(),
             );
+          }
+
+        case FilterEnum.date:
+          {
+            showDateRangePickerDialog();
           }
       }
     }
@@ -323,15 +332,21 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ),
                 )
                 : Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                      child: Text(
-                        state.message,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
+                  child: RefreshIndicator(
+                    onRefresh: _refreshPosts,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                          child: Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ),
