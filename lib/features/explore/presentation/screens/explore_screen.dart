@@ -192,7 +192,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             primaryBottomSheet(
               padding: EdgeInsets.zero,
               context,
-              child: const CategoriesListBottomsheet(),
+              child: SafeArea(child: const CategoriesListBottomsheet()),
             );
           }
       }
