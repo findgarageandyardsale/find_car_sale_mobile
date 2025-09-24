@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "53723541578",
+    "project_id": "find-garage-and-yard-sale",
+    "storage_bucket": "find-garage-and-yard-sale.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53723541578:android:66bdaf15221b32dd64b6b3",
+        "android_client_info": {
+          "package_name": "com.findorlookup.findcarsale"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_pJj6JbWVjfIMeKG_uQLiXwAh3_gilLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53723541578:android:40be489c6af2b1b164b6b3",
+        "android_client_info": {
+          "package_name": "com.findorlookup.openhouse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_pJj6JbWVjfIMeKG_uQLiXwAh3_gilLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53723541578:android:b159292f56a9b6df64b6b3",
+        "android_client_info": {
+          "package_name": "com.findorlookup.streetfood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_pJj6JbWVjfIMeKG_uQLiXwAh3_gilLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53723541578:android:328b04059ea93c3e64b6b3",
+        "android_client_info": {
+          "package_name": "com.garageyard.garageyardsale"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_pJj6JbWVjfIMeKG_uQLiXwAh3_gilLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
