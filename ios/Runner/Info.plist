@@ -24,6 +24,27 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Turning on apple music allows us to get access to music library</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allowing access to the camera enables you to upload photos for your profile and create posts </string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Turning on location services allows us to show your location on map </string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Turning on location services allows us to show your location on map</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Turning on location services allows us to show your location on map</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allowing access to the photo library enables you to select images for your profile and posts.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses users information to track user app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
+	
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

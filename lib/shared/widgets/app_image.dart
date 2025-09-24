@@ -7,7 +7,7 @@ class AppImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/launcher.png',
+      'assets/launcher.jpeg',
       height: size ?? 150,
       width: size ?? 150,
     );

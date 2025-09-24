@@ -66,7 +66,11 @@ class ChangePasswordScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset('assets/launcher.png', height: 150, width: 150),
+                    Image.asset(
+                      'assets/launcher.jpeg',
+                      height: 150,
+                      width: 150,
+                    ),
                     Spacing.sizedBoxH_36(),
                     Text(
                       'Change Password',

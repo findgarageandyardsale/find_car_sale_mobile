@@ -22,7 +22,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
   bool onTap = false;
   Garageayard? tapModel;
   BitmapDescriptor? garageIcon;
-  BitmapDescriptor? yardIcon;
   @override
   void initState() {
     super.initState();
@@ -50,10 +49,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
     garageIcon = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(16, 26)),
       'assets/garage.png',
-    );
-    yardIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(16, 26)),
-      'assets/yard.png',
     );
     setState(() {}); // Update the UI once icons are loaded
   }
@@ -92,10 +87,7 @@ class _MapExploreState extends ConsumerState<MapExplore> {
                 element.location!.longitude!,
               ),
               onTap: () => setGarageAndTap(element),
-              icon:
-                  element.type == GarageYardType.garage
-                      ? garageIcon ?? BitmapDescriptor.defaultMarker
-                      : yardIcon ?? BitmapDescriptor.defaultMarker,
+              icon: garageIcon ?? BitmapDescriptor.defaultMarker,
             ),
           );
         }
@@ -168,16 +160,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
               ),
           ],
         )
-        : const Center(child: Text('Unable to fetch location'))
-    // GoogleMap(
-    //   mapType: MapType.normal,
-    //   myLocationButtonEnabled: false,
-    //   initialCameraPosition: const CameraPosition(
-    //     target: LatLng(37.42796133580664, -122.085749655962),
-    //     zoom: 15,
-    //   ),
-    //   onMapCreated: (GoogleMapController controller) {},
-    // )
-    ;
+        : const Center(child: Text('Unable to fetch location'));
   }
 }

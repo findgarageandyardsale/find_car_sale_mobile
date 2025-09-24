@@ -90,7 +90,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     return Scaffold(
       // backgroundColor: Theme.of(context).backgroundColor,
       body: Center(
-        child: Image.asset('assets/launcher.png', height: 150, width: 150),
+        child: Image.asset('assets/launcher.jpeg', height: 150, width: 150),
       ),
     );
   }
