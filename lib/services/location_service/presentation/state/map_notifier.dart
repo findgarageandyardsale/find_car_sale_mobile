@@ -26,10 +26,10 @@ class MapNotifier extends StateNotifier<LocationState> {
           error: 'Location permission is required.',
         );
       }
-    } catch (_) {
+    } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to check location permission.',
+        error: 'Failed to check location permission: $e',
       );
     }
   }
@@ -39,7 +39,18 @@ class MapNotifier extends StateNotifier<LocationState> {
     if (_isInitialized) return;
 
     try {
-      state = state.copyWith(isLoading: true);
+      state = state.copyWith(isLoading: true, error: null);
+
+      // Check if location services are enabled
+      bool serviceEnabled = await locationRepository.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Location services are disabled. Please enable GPS.',
+        );
+        return;
+      }
+
       final position = await locationRepository.getCurrentPosition();
       state = state.copyWith(
         isLoading: false,
@@ -52,6 +63,14 @@ class MapNotifier extends StateNotifier<LocationState> {
         isLoading: false,
         error: 'Failed to get location: $e',
       );
+      _isInitialized =
+          true; // Mark as initialized even on error to prevent retry loops
     }
+  }
+
+  // Method to retry getting location (useful when user enables GPS)
+  Future<void> retryGetLocation() async {
+    _isInitialized = false; // Reset initialization flag
+    await getUserLocation();
   }
 }

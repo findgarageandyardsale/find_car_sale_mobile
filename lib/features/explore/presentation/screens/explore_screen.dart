@@ -79,9 +79,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(exploreNotifierProvider);
-
     final filterState = ref.watch(filterNotifierProvider);
     final debouncer = CustomDebouncer(milliseconds: 900);
+
+    // Initialize explore data when location is available
+    ref.watch(exploreInitializerProvider);
 
     ref.listen(exploreNotifierProvider.select((value) => value), ((
       ExploreState? previous,

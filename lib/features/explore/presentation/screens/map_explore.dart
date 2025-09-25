@@ -34,7 +34,7 @@ class _MapExploreState extends ConsumerState<MapExplore> {
       final locationState = ref.watch(mapNotifierProvider);
 
       if (locationState.error != null) {
-        ref.read(mapNotifierProvider.notifier).getUserLocation();
+        ref.read(mapNotifierProvider.notifier).retryGetLocation();
       }
     });
   }
@@ -67,10 +67,11 @@ class _MapExploreState extends ConsumerState<MapExplore> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(mapNotifierProvider);
-    final state = ref.watch(exploreNotifierProvider);
+    final state = ref.watch(mapExploreNotifierProvider);
     final zool = ref.watch(zoomLevelState);
 
-    // Listen to changes in exploreNotifierProvider
+    // Initialize map explore data when location is available
+    ref.watch(mapExploreInitializerProvider);
 
     Set<Marker> markers = <Marker>{};
     try {
@@ -103,19 +104,56 @@ class _MapExploreState extends ConsumerState<MapExplore> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Error: ${locationState.error}', maxLines: 3),
+              Icon(Icons.location_off, size: 64, color: Colors.grey[400]),
               Spacing.sizedBoxH_16(),
-              ElevatedButton(
-                onPressed: () async {
-                  bool opened = await openAppSettings();
-                  if (!opened) {
-                    CustomToast.showToast(
-                      "Failed to open settings",
-                      status: ToastStatus.error,
-                    );
-                  }
-                },
-                child: const Text('Open App Settings'),
+              Text(
+                'Location Error',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Spacing.sizedBoxH_08(),
+              Text(
+                locationState.error!,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Spacing.sizedBoxH_24(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ref.read(mapNotifierProvider.notifier).retryGetLocation();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      // Request location permission first
+                      PermissionStatus status =
+                          await Permission.location.request();
+
+                      if (status.isDenied || status.isPermanentlyDenied) {
+                        // Open app settings for location permission
+                        bool opened = await openAppSettings();
+                        if (!opened) {
+                          CustomToast.showToast(
+                            "Failed to open settings",
+                            status: ToastStatus.error,
+                          );
+                        }
+                      } else if (status.isGranted) {
+                        // Permission granted, retry location
+                        ref
+                            .read(mapNotifierProvider.notifier)
+                            .retryGetLocation();
+                      }
+                    },
+                    icon: const Icon(Icons.location_on),
+                    label: const Text('Location Settings'),
+                  ),
+                ],
               ),
             ],
           ),
