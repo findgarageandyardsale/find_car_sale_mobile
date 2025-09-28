@@ -652,11 +652,11 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       name: 'brand',
                       hintText: 'Brand*',
                       labelText: 'Brand*',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(
-                          errorText: 'Brand cannot be empty.',
-                        ),
-                      ]),
+                      // validator: FormBuilderValidators.compose([
+                      //   FormBuilderValidators.required(
+                      //     errorText: 'Brand cannot be empty.',
+                      //   ),
+                      // ]),
                       controller: brandController,
                       // Apply the custom TextInputFormatter
                     ),
