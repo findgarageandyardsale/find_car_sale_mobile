@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/shared/domain/models/garage_yard/garage_yard_model.dart';
 import 'package:findcarsale/shared/utils/print_utils.dart';
+import 'package:findcarsale/shared/utils/map_utils.dart';
 import 'package:findcarsale/shared/widgets/post_single_item.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -73,28 +74,58 @@ class _MapExploreState extends ConsumerState<MapExplore> {
     // Initialize map explore data when location is available
     ref.watch(mapExploreInitializerProvider);
 
-    Set<Marker> markers = <Marker>{};
+    Set<Circle> circles = <Circle>{};
     try {
+      PrintUtils.customLog(
+        "Creating circles for ${state.garageYardList.length} locations",
+      );
+
+      // Add a test circle at current location to ensure circles work
+      if (locationState.currentLatLng != null) {
+        circles.add(
+          Circle(
+            circleId: const CircleId('test_circle'),
+            center: locationState.currentLatLng!,
+            radius: MapUtils.halfMileInMeters,
+            fillColor: Colors.green.withOpacity(0.3),
+            strokeColor: Colors.green,
+            strokeWidth: 3,
+            onTap: () => PrintUtils.customLog("Test circle tapped"),
+          ),
+        );
+        PrintUtils.customLog("Added test circle at current location");
+      }
+
       for (var element in state.garageYardList) {
         if (element.location?.latitude != null &&
             element.location?.longitude != null) {
-          // Load the custom marker from assets
+          // Create a circle instead of a marker
+          LatLng position = LatLng(
+            element.location!.latitude!,
+            element.location!.longitude!,
+          );
 
-          markers.add(
-            Marker(
-              markerId: MarkerId('${element.id}'),
-              position: LatLng(
-                element.location!.latitude!,
-                element.location!.longitude!,
-              ),
+          circles.add(
+            Circle(
+              circleId: CircleId('${element.id}'),
+              center: position,
+              radius: MapUtils.halfMileInMeters, // Half mile radius
+              fillColor: Colors.red.withOpacity(
+                0.3,
+              ), // Changed to red for better visibility
+              strokeColor: Colors.red, // Changed to red for better visibility
+              strokeWidth: 3, // Increased stroke width
               onTap: () => setGarageAndTap(element),
-              icon: garageIcon ?? BitmapDescriptor.defaultMarker,
             ),
+          );
+          PrintUtils.customLog(
+            "Added circle for ${element.id} at ${position.latitude}, ${position.longitude}",
           );
         }
       }
+      PrintUtils.customLog("Total circles created: ${circles.length}");
     } catch (e) {
-      PrintUtils.customLog("Error in markers: $e");
+      PrintUtils.customLog("Error in circles: $e");
     }
 
     return locationState.isLoading
@@ -165,22 +196,14 @@ class _MapExploreState extends ConsumerState<MapExplore> {
               mapType: MapType.terrain,
               myLocationButtonEnabled: true,
               initialCameraPosition: CameraPosition(
-                target:
-                    // markers.isEmpty
-                    //     ?
-                    locationState.currentLatLng!,
-                // : markers.first.position,
-
-                ///set this to inital marker
-                zoom: zool,
-
-                ///zoom level
+                target: locationState.currentLatLng!,
+                zoom: 12.0, // Fixed zoom level to ensure circles are visible
               ),
               onMapCreated: (GoogleMapController controller) {
                 // ref.read(mapControllerState.notifier).state =
                 //     controller;
               },
-              markers: markers,
+              circles: circles,
             ),
             if (onTap)
               Positioned(

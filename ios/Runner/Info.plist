@@ -44,11 +44,13 @@
 	<string>Allowing access to the photo library enables you to select images for your profile and posts.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app uses users information to track user app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
-	
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

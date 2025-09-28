@@ -48,7 +48,7 @@ class AddNotifier extends StateNotifier<FormzState> {
 
       Map<String, dynamic> data = postData!.toJson();
       data['condition'] = postData?.condition?.id;
-      data['price'] = postPrice;
+      // data['price'] = postPrice;
       data['name'] = postData?.title;
       data['status'] = 'Active';
       data['available_time_slots'] = availableTimeSlots;
@@ -90,17 +90,17 @@ class AddNotifier extends StateNotifier<FormzState> {
           convertAvailableTimeSlotListToJson(timeSlots);
 
       Map<String, dynamic> data = postData!.toJson();
-      final postPrice =
-          (HelperConstant.priceForEach *
-              (postData?.availableTimeSlots ?? []).length);
+      // final postPrice =
+      //     (HelperConstant.priceForEach *
+      //         (postData?.availableTimeSlots ?? []).length);
 
-      HelperConstant.postPrice =
-          (postPrice == 0
-                  ? (postData?.price ?? HelperConstant.fixPrice)
-                  : postPrice)
-              .toString();
+      // HelperConstant.postPrice =
+      //     (postPrice == 0
+      //             ? (postData?.price ?? HelperConstant.fixPrice)
+      //             : postPrice)
+      //         .toString();
       data['condition'] = postData?.condition?.id;
-      data['price'] = postPrice;
+      data['price'] = HelperConstant.postPrice;
       data['name'] = postData?.title;
 
       data['transaction_id'] =
@@ -139,6 +139,9 @@ class AddNotifier extends StateNotifier<FormzState> {
         ),
       );
     }
+  }
+  void setPrice(double price) {
+    HelperConstant.postPrice = price.toString();
   }
 
   /*Future<void> paymentGarageSale({String? transactionId}) async {

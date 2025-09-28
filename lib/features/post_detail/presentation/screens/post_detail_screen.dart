@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:findcarsale/dummy_data.dart';
 import 'package:findcarsale/shared/widgets/no_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -17,6 +16,7 @@ import '../../../../shared/domain/models/user/user_model.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/app_utils.dart';
 import '../../../../shared/utils/cusotm_date_utils.dart';
+import '../../../../shared/utils/map_utils.dart';
 import '../../../../shared/widgets/decription_chip.dart';
 import '../../../../shared/widgets/location_text.dart';
 import '../../../../shared/widgets/status_chip.dart';
@@ -37,7 +37,7 @@ class PostDetailScreen extends ConsumerStatefulWidget {
 class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   late GoogleMapController mapController;
 
-  final Set<Marker> _markers = {};
+  final Set<Circle> _circles = {};
 
   void getDetailPage() {
     Future.microtask(() {
@@ -50,33 +50,29 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // _loadCustomMarker();
+    _loadCustomCircle();
     getDetailPage();
   }
 
-  void _loadCustomMarker(garageayard) async {
-    // Load the custom marker from assets
-    BitmapDescriptor customIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(16, 26)),
-      garageayard.type == GarageYardType.garage
-          ? 'assets/garage.png'
-          : 'assets/yard.png', // Path to your image in assets
+  void _loadCustomCircle() {
+    // Create a circle with half-mile radius
+    LatLng position = LatLng(
+      widget.garageayard.location?.latitude ?? 27.6782,
+      widget.garageayard.location?.longitude ?? 85.3808,
     );
 
-    // Add a marker using the custom icon
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('customMarker'),
-        position: LatLng(
-          garageayard.location?.latitude ?? 27.6782,
-          garageayard.location?.longitude ?? 85.3808,
-        ),
-        icon: customIcon,
-        // consumeTapEvents: true,
+    _circles.add(
+      Circle(
+        circleId: const CircleId('customCircle'),
+        center: position,
+        radius: MapUtils.halfMileInMeters, // Half mile radius
+        fillColor: Colors.blue.withOpacity(0.2),
+        strokeColor: Colors.blue,
+        strokeWidth: 2,
       ),
     );
 
-    setState(() {}); // Update the UI to display the marker
+    setState(() {}); // Update the UI to display the circle
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -257,7 +253,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         },
         success: (val) {
           final garageayard = val is Garageayard ? val : widget.garageayard;
-          _loadCustomMarker(garageayard);
+          _loadCustomCircle();
           bool isGarage = true;
           // garageayard.type == GarageYardType.garage;
           StatusEnum? status = garageayard.status;
@@ -468,63 +464,63 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                         Spacing.sizedBoxH_08(),
 
                         // Enhanced Location Section
-                        Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[50],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.blue[200]!),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    color: Colors.blue[600],
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Location',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.blue[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Spacing.sizedBoxH_08(),
-                              LocationText(
-                                fromDetail: true,
-                                isGarage: isGarage,
-                                location: AppUtils.formatLocationAsAddress(
-                                  garageayard.location ?? const LocationModel(),
-                                ),
-                              ),
-                              if (garageayard.location?.addressLine !=
-                                  null) ...[
-                                Spacing.sizedBoxH_04(),
-                                Text(
-                                  garageayard.location!.addressLine!,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: Colors.grey[600]),
-                                ),
-                              ],
-                              if (garageayard.location?.zipCode != null) ...[
-                                Spacing.sizedBoxH_04(),
-                                Text(
-                                  'ZIP: ${garageayard.location!.zipCode!}',
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(color: Colors.grey[500]),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.all(16.0),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.blue[50],
+                        //     borderRadius: BorderRadius.circular(12),
+                        //     border: Border.all(color: Colors.blue[200]!),
+                        //   ),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Row(
+                        //         children: [
+                        //           Icon(
+                        //             Icons.location_on,
+                        //             color: Colors.blue[600],
+                        //             size: 20,
+                        //           ),
+                        //           const SizedBox(width: 8),
+                        //           Text(
+                        //             'Location',
+                        //             style: Theme.of(
+                        //               context,
+                        //             ).textTheme.titleMedium?.copyWith(
+                        //               fontWeight: FontWeight.w600,
+                        //               color: Colors.blue[600],
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Spacing.sizedBoxH_08(),
+                        //       LocationText(
+                        //         fromDetail: true,
+                        //         isGarage: isGarage,
+                        //         location: AppUtils.formatLocationAsAddress(
+                        //           garageayard.location ?? const LocationModel(),
+                        //         ),
+                        //       ),
+                        //       if (garageayard.location?.addressLine !=
+                        //           null) ...[
+                        //         Spacing.sizedBoxH_04(),
+                        //         Text(
+                        //           garageayard.location!.addressLine!,
+                        //           style: Theme.of(context).textTheme.bodyMedium
+                        //               ?.copyWith(color: Colors.grey[600]),
+                        //         ),
+                        //       ],
+                        //       if (garageayard.location?.zipCode != null) ...[
+                        //         Spacing.sizedBoxH_04(),
+                        //         Text(
+                        //           'ZIP: ${garageayard.location!.zipCode!}',
+                        //           style: Theme.of(context).textTheme.bodySmall
+                        //               ?.copyWith(color: Colors.grey[500]),
+                        //         ),
+                        //       ],
+                        //     ],
+                        //   ),
+                        // ),
                         Spacing.sizedBoxH_16(),
 
                         // Contact Information Section
@@ -601,7 +597,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                             mapType: MapType.terrain,
                             onMapCreated: _onMapCreated,
                             myLocationButtonEnabled: false,
-                            markers: _markers,
+                            circles: _circles,
                             mapToolbarEnabled: true,
                             zoomControlsEnabled: true,
                             zoomGesturesEnabled: true,
