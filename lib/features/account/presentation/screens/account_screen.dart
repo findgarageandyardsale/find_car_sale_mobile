@@ -24,6 +24,7 @@ import '../../../../shared/presentation/formz_state.dart';
 import '../../../../shared/widgets/custom_loading.dart';
 import '../widgets/circular_user_image_widget.dart';
 import 'package:findcarsale/features/account/presentation/providers/state/logout_provider.dart';
+import 'package:findcarsale/routes/app_route.gr.dart';
 
 @RoutePage()
 class AccountScreen extends ConsumerWidget {
@@ -346,6 +347,13 @@ class AccountScreen extends ConsumerWidget {
                     onTap: () {
                       // shareLink();
                       onShareApp();
+                    },
+                  ),
+                  CustomListTileWidget(
+                    icon: Icons.chat_outlined,
+                    title: 'Messages',
+                    onTap: () {
+                      naviagtion(ChatListScreen());
                     },
                   ),
                   CustomListTileWidget(

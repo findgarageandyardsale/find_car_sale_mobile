@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/firebase_options.dart';
 import 'package:findcarsale/observers.dart';
@@ -20,18 +19,17 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    await dotenv.load();
-  } catch (_) {
-    PrintUtils.customLog("Error loading .env file");
-  }
 
+  // Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    PrintUtils.customLog("Firebase initialized successfully");
   } catch (e) {
     PrintUtils.customLog("Firebase initialization failed $e");
+    // Don't continue if Firebase fails to initialize
+    rethrow;
   }
 
   try {

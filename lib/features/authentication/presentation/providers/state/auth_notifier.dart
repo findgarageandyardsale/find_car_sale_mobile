@@ -11,31 +11,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   final UserRepository userRepository;
 
-  AuthNotifier({
-    required this.authRepository,
-    required this.userRepository,
-  }) : super(const AuthState.initial());
+  AuthNotifier({required this.authRepository, required this.userRepository})
+    : super(const AuthState.initial());
 
-  Future<void> loginUser(String username, String password,
-      {String? fcmToken}) async {
+  Future<void> loginUser(
+    String username,
+    String password, {
+    String? fcmToken,
+  }) async {
     state = const AuthState.loading();
     final response = await authRepository.loginUser(
       user: User(
-          username: username,
-          password: password,
-          email: username,
-          token: fcmToken),
+        username: username,
+        password: password,
+        email: username,
+        token: fcmToken,
+      ),
     );
 
-    state = await response.fold(
-      (failure) => AuthState.failure(failure),
-      (user) async {
-        final hasSavedUser = await userRepository.saveUser(user: user);
-        if (hasSavedUser) {
-          return const AuthState.success();
-        }
-        return AuthState.failure(CacheFailureException());
-      },
-    );
+    state = await response.fold((failure) => AuthState.failure(failure), (
+      user,
+    ) async {
+      final hasSavedUser = await userRepository.saveUser(user: user);
+      if (hasSavedUser) {
+        return const AuthState.success();
+      }
+      return AuthState.failure(CacheFailureException());
+    });
   }
 }

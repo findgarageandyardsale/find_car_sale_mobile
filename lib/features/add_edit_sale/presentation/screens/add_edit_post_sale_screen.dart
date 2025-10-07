@@ -545,7 +545,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                   children: [
                     const TitleHead(
                       title: 'Add Image',
-                      subtitle: 'Upload up to max 10 images of your item',
+                      subtitle: 'Upload up to max 10 images of your vehicle',
                     ),
                     Spacing.sizedBoxH_08(),
                     const ImageScreen(),
@@ -633,6 +633,19 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       },
                       inputFormatters: [PriceInputFormatter()],
                     ),
+                    Spacing.sizedBoxH_20(),
+                    AuthField(
+                      name: 'make',
+                      hintText: 'Make*',
+                      labelText: 'Make*',
+                      // validator: FormBuilderValidators.compose([
+                      //   FormBuilderValidators.required(
+                      //     errorText: 'Brand cannot be empty.',
+                      //   ),
+                      // ]),
+                      controller: brandController,
+                      // Apply the custom TextInputFormatter
+                    ),
                     Spacing.sizedBoxH_16(),
 
                     AuthField(
@@ -647,19 +660,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       controller: modelController,
                       // Apply the custom TextInputFormatter
                     ),
-                    Spacing.sizedBoxH_20(),
-                    AuthField(
-                      name: 'brand',
-                      hintText: 'Brand*',
-                      labelText: 'Brand*',
-                      // validator: FormBuilderValidators.compose([
-                      //   FormBuilderValidators.required(
-                      //     errorText: 'Brand cannot be empty.',
-                      //   ),
-                      // ]),
-                      controller: brandController,
-                      // Apply the custom TextInputFormatter
-                    ),
+
                     Spacing.sizedBoxH_20(),
                     CustomYearPicker(
                       name: 'year',
@@ -691,7 +692,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                     ),
 
                     Spacing.sizedBoxH_20(),
-                    TitleHead(title: 'Any Warranty?'),
+                    TitleHead(title: 'Warranty?'),
                     Consumer(
                       builder: (context, ref, child) {
                         final warrantyConditionNotifier = ref.read(
@@ -975,40 +976,41 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Spacing.sizedBoxH_08(),
-                    AuthField(
-                      name: 'phone_number',
-                      hintText: 'Phone Number',
-                      labelText: 'Phone Number',
-                      textInputAction: TextInputAction.next,
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(
-                          errorText: 'Phone Number is empty.',
-                        ),
-                        FormBuilderValidators.match(
-                          RegExp(
-                            r'^(?:\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
-                          ),
-                          errorText: 'Invalid American Phone Number',
-                        ),
-                      ]),
-                      keyboardType: TextInputType.phone,
-                      onChanged: (value) {
-                        if (formKey
-                                .currentState
-                                ?.fields['phone_number']
-                                ?.hasError ??
-                            false) {
-                          formKey.currentState?.fields['phone_number']
-                              ?.validate();
-                        }
-                      },
-                      controller: phoneNumberController,
-                    ),
+
+                    // Spacing.sizedBoxH_08(),
+                    // AuthField(
+                    //   name: 'phone_number',
+                    //   hintText: 'Phone Number',
+                    //   labelText: 'Phone Number',
+                    //   textInputAction: TextInputAction.next,
+                    //   validator: FormBuilderValidators.compose([
+                    //     FormBuilderValidators.required(
+                    //       errorText: 'Phone Number is empty.',
+                    //     ),
+                    //     FormBuilderValidators.match(
+                    //       RegExp(
+                    //         r'^(?:\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
+                    //       ),
+                    //       errorText: 'Invalid American Phone Number',
+                    //     ),
+                    //   ]),
+                    //   keyboardType: TextInputType.phone,
+                    //   onChanged: (value) {
+                    //     if (formKey
+                    //             .currentState
+                    //             ?.fields['phone_number']
+                    //             ?.hasError ??
+                    //         false) {
+                    //       formKey.currentState?.fields['phone_number']
+                    //           ?.validate();
+                    //     }
+                    //   },
+                    //   controller: phoneNumberController,
+                    // ),
                     Spacing.sizedBoxH_24(),
                     const TitleHead(
                       title: 'Promo Code',
-                      subtitle: 'You can add a promo code to your sale',
+                      subtitle: 'You can add a promo code',
                     ),
                     Spacing.sizedBoxH_12(),
                     AuthField(
@@ -1021,12 +1023,12 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       controller: promoCodeController,
                     ),
                     Spacing.sizedBoxH_24(),
-                    SaleTiming(
-                      isGarage: isGarage,
-                      totalSlot:
-                          (widget.garageayard?.availableTimeSlots ?? []).length,
-                    ),
-                    Spacing.sizedBoxH_30(),
+                    // SaleTiming(
+                    //   isGarage: isGarage,
+                    //   totalSlot:
+                    //       (widget.garageayard?.availableTimeSlots ?? []).length,
+                    // ),
+                    // Spacing.sizedBoxH_30(),
                   ],
                 ),
               ),

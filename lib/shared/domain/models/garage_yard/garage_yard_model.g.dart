@@ -29,6 +29,7 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
       json['condition'] == null
           ? null
           : CarCondition.fromJson(json['condition'] as Map<String, dynamic>),
+  userId: (json['user_id'] as num?)?.toInt(),
   attachments:
       (json['images'] as List<dynamic>?)
           ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
@@ -55,6 +56,7 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
       'transaction_id': instance.transactionId,
       'available_time_slots': instance.availableTimeSlots,
       'condition': instance.condition,
+      'user_id': instance.userId,
       'images': instance.attachments,
       'is_new': instance.isNew,
       'warranty': instance.warranty,

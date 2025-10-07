@@ -80,10 +80,11 @@ class SignupScreen extends ConsumerWidget {
     }));
     return CustomLoadingOverlay(
       isLoading: signupState is Loading,
-      child: Scaffold(
-        appBar: AppBar(centerTitle: false, title: const Text('Sign Up')),
-        body: SafeArea(
-          child: Center(
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(centerTitle: false, title: const Text('Sign Up')),
+          body: Center(
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
@@ -177,12 +178,19 @@ class SignupScreen extends ConsumerWidget {
                               // FormBuilderValidators.required(
                               //   errorText: 'Phone Number is empty.',
                               // ),
-                              FormBuilderValidators.match(
-                                RegExp(
+                              (value) {
+                                if (value == null || value.isEmpty) {
+                                  return null; // Allow empty values since it's not required
+                                }
+                                // Validate phone number format only if not empty
+                                final phoneRegex = RegExp(
                                   r'^(?:\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
-                                ),
-                                errorText: 'Invalid American Phone Number',
-                              ),
+                                );
+                                if (!phoneRegex.hasMatch(value)) {
+                                  return 'Invalid American Phone Number';
+                                }
+                                return null;
+                              },
                             ]),
                             keyboardType: TextInputType.phone,
                             onChanged: (value) {

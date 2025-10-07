@@ -36,7 +36,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int currentPageIndex = 0;
 
   final appleId =
-      ''; // If this value is null, its packagename will be considered
+      '6752904628'; // If this value is null, its packagename will be considered
   final playStoreId =
       'com.findorlookup.findcarsale'; // If this value is null, its packagename will be considered
 

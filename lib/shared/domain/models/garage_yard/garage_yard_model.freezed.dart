@@ -38,6 +38,8 @@ mixin _$Garageayard {
   List<AvailableTimeSlot>? get availableTimeSlots =>
       throw _privateConstructorUsedError;
   CarCondition? get condition => throw _privateConstructorUsedError;
+  @JsonKey(name: 'user_id')
+  int? get userId => throw _privateConstructorUsedError;
   @JsonKey(name: 'images')
   List<AttachmentModel>? get attachments => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_new')
@@ -82,6 +84,7 @@ abstract class $GarageayardCopyWith<$Res> {
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
     CarCondition? condition,
+    @JsonKey(name: 'user_id') int? userId,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
@@ -122,6 +125,7 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
     Object? transactionId = freezed,
     Object? availableTimeSlots = freezed,
     Object? condition = freezed,
+    Object? userId = freezed,
     Object? attachments = freezed,
     Object? isNew = freezed,
     Object? warranty = freezed,
@@ -188,6 +192,11 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
                     ? _value.condition
                     : condition // ignore: cast_nullable_to_non_nullable
                         as CarCondition?,
+            userId:
+                freezed == userId
+                    ? _value.userId
+                    : userId // ignore: cast_nullable_to_non_nullable
+                        as int?,
             attachments:
                 freezed == attachments
                     ? _value.attachments
@@ -284,6 +293,7 @@ abstract class _$$GarageayardImplCopyWith<$Res>
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
     CarCondition? condition,
+    @JsonKey(name: 'user_id') int? userId,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
@@ -325,6 +335,7 @@ class __$$GarageayardImplCopyWithImpl<$Res>
     Object? transactionId = freezed,
     Object? availableTimeSlots = freezed,
     Object? condition = freezed,
+    Object? userId = freezed,
     Object? attachments = freezed,
     Object? isNew = freezed,
     Object? warranty = freezed,
@@ -391,6 +402,11 @@ class __$$GarageayardImplCopyWithImpl<$Res>
                 ? _value.condition
                 : condition // ignore: cast_nullable_to_non_nullable
                     as CarCondition?,
+        userId:
+            freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                    as int?,
         attachments:
             freezed == attachments
                 ? _value._attachments
@@ -452,6 +468,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     @JsonKey(name: 'available_time_slots')
     final List<AvailableTimeSlot>? availableTimeSlots,
     this.condition,
+    @JsonKey(name: 'user_id') this.userId,
     @JsonKey(name: 'images') final List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') this.isNew,
     @JsonKey(name: 'warranty') this.warranty,
@@ -502,6 +519,9 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
 
   @override
   final CarCondition? condition;
+  @override
+  @JsonKey(name: 'user_id')
+  final int? userId;
   final List<AttachmentModel>? _attachments;
   @override
   @JsonKey(name: 'images')
@@ -534,7 +554,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, condition: $condition, attachments: $attachments, isNew: $isNew, warranty: $warranty, miles: $miles, model: $model, brand: $brand, year: $year, phoneNumber: $phoneNumber)';
+    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, condition: $condition, userId: $userId, attachments: $attachments, isNew: $isNew, warranty: $warranty, miles: $miles, model: $model, brand: $brand, year: $year, phoneNumber: $phoneNumber)';
   }
 
   @override
@@ -553,6 +573,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
       ..add(DiagnosticsProperty('transactionId', transactionId))
       ..add(DiagnosticsProperty('availableTimeSlots', availableTimeSlots))
       ..add(DiagnosticsProperty('condition', condition))
+      ..add(DiagnosticsProperty('userId', userId))
       ..add(DiagnosticsProperty('attachments', attachments))
       ..add(DiagnosticsProperty('isNew', isNew))
       ..add(DiagnosticsProperty('warranty', warranty))
@@ -587,6 +608,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
             ) &&
             (identical(other.condition, condition) ||
                 other.condition == condition) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             const DeepCollectionEquality().equals(
               other._attachments,
               _attachments,
@@ -617,6 +639,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     transactionId,
     const DeepCollectionEquality().hash(_availableTimeSlots),
     condition,
+    userId,
     const DeepCollectionEquality().hash(_attachments),
     isNew,
     warranty,
@@ -655,6 +678,7 @@ abstract class _Garageayard implements Garageayard {
     @JsonKey(name: 'available_time_slots')
     final List<AvailableTimeSlot>? availableTimeSlots,
     final CarCondition? condition,
+    @JsonKey(name: 'user_id') final int? userId,
     @JsonKey(name: 'images') final List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') final bool? isNew,
     @JsonKey(name: 'warranty') final bool? warranty,
@@ -695,6 +719,9 @@ abstract class _Garageayard implements Garageayard {
   List<AvailableTimeSlot>? get availableTimeSlots;
   @override
   CarCondition? get condition;
+  @override
+  @JsonKey(name: 'user_id')
+  int? get userId;
   @override
   @JsonKey(name: 'images')
   List<AttachmentModel>? get attachments;

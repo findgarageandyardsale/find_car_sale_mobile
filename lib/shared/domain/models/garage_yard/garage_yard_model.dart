@@ -24,6 +24,7 @@ class Garageayard with _$Garageayard {
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
     CarCondition? condition,
+    @JsonKey(name: 'user_id') int? userId,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,

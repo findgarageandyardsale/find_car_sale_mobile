@@ -12,6 +12,7 @@ extension GarageScaffold on BuildContext {
     bool? isActive,
     String? statusText,
     AppBar? appbar,
+    Widget? actionButton,
   }) {
     Color color = isGarage ? AppColors.secondary : AppColors.green;
     return SafeArea(
@@ -23,7 +24,8 @@ extension GarageScaffold on BuildContext {
             isGarage ? AppColors.surfaceLight : AppColors.softColor,
         body: content,
         bottomNavigationBar:
-            (actions ?? []).length == 1
+            actionButton ??
+            ((actions ?? []).length == 1
                 ? null
                 : isActive == null
                 ? Container(
@@ -56,7 +58,7 @@ extension GarageScaffold on BuildContext {
                     buttonColor: color,
                     textColor: AppColors.white,
                   ),
-                ),
+                )),
       ),
     );
   }
