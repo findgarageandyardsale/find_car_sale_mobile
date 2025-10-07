@@ -308,7 +308,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                   children: [
                                     Expanded(
                                       child: _buildSpecItem(
-                                        'Brand',
+                                        'Make',
                                         garageayard.brand ?? 'N/A',
                                       ),
                                     ),
@@ -436,30 +436,30 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                             ),
                           Spacing.sizedBoxH_16(),
 
-                          if (status != null) StatusChip(status: status),
-                          if (status != null) Spacing.sizedBoxH_16(),
-                          Column(
-                            children:
-                                (garageayard.availableTimeSlots ?? [])
-                                    .map(
-                                      (e) => Column(
-                                        children: [
-                                          TimerText(
-                                            fromDetail: true,
-                                            isGarage: isGarage,
-                                            date: CustomDateUtils.formatDate(
-                                              e.date ?? DateTime.now(),
-                                            ),
-                                            time:
-                                                '${CustomDateUtils.convertTo12HourFormat(e.startTime)} - ${CustomDateUtils.convertTo12HourFormat(e.endTime)}',
-                                          ),
-                                          Spacing.sizedBoxH_08(),
-                                        ],
-                                      ),
-                                    )
-                                    .toList(),
-                          ),
-                          Spacing.sizedBoxH_08(),
+                          // if (status != null) StatusChip(status: status),
+                          // if (status != null) Spacing.sizedBoxH_16(),
+                          // Column(
+                          //   children:
+                          //       (garageayard.availableTimeSlots ?? [])
+                          //           .map(
+                          //             (e) => Column(
+                          //               children: [
+                          //                 TimerText(
+                          //                   fromDetail: true,
+                          //                   isGarage: isGarage,
+                          //                   date: CustomDateUtils.formatDate(
+                          //                     e.date ?? DateTime.now(),
+                          //                   ),
+                          //                   time:
+                          //                       '${CustomDateUtils.convertTo12HourFormat(e.startTime)} - ${CustomDateUtils.convertTo12HourFormat(e.endTime)}',
+                          //                 ),
+                          //                 Spacing.sizedBoxH_08(),
+                          //               ],
+                          //             ),
+                          //           )
+                          //           .toList(),
+                          // ),
+                          // Spacing.sizedBoxH_08(),
 
                           // Enhanced Location Section
                           // Container(
@@ -522,63 +522,64 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                           Spacing.sizedBoxH_16(),
 
                           // Contact Information Section
-                          if (garageayard.phoneNumber != null)
-                            Container(
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.green[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.green[200]!),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.phone,
-                                        color: Colors.green[600],
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Contact Information',
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.green[600],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Spacing.sizedBoxH_08(),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Phone: ',
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Text(
-                                        garageayard.phoneNumber!,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.green[700],
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (garageayard.phoneNumber != null)
-                            Spacing.sizedBoxH_16(),
+                          // if (garageayard.phoneNumber != null)
+                          //   Container(
+                          //     padding: const EdgeInsets.all(16.0),
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.green[50],
+                          //       borderRadius: BorderRadius.circular(12),
+                          //       border: Border.all(color: Colors.green[200]!),
+                          //     ),
+                          //     child: Column(
+                          //       crossAxisAlignment: CrossAxisAlignment.start,
+                          //       children: [
+                          //         Row(
+                          //           children: [
+                          //             Icon(
+                          //               Icons.phone,
+                          //               color: Colors.green[600],
+                          //               size: 20,
+                          //             ),
+                          //             const SizedBox(width: 8),
+                          //             Text(
+                          //               'Contact Information',
+                          //               style: Theme.of(
+                          //                 context,
+                          //               ).textTheme.titleMedium?.copyWith(
+                          //                 fontWeight: FontWeight.w600,
+                          //                 color: Colors.green[600],
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //         Spacing.sizedBoxH_08(),
+                          //         Row(
+                          //           children: [
+                          //             Text(
+                          //               'Phone: ',
+                          //               style: Theme.of(
+                          //                 context,
+                          //               ).textTheme.bodyMedium?.copyWith(
+                          //                 fontWeight: FontWeight.w500,
+                          //               ),
+                          //             ),
+                          //             Text(
+                          //               garageayard.phoneNumber!,
+                          //               style: Theme.of(
+                          //                 context,
+                          //               ).textTheme.bodyMedium?.copyWith(
+                          //                 color: Colors.green[700],
+                          //                 fontWeight: FontWeight.w600,
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // if (garageayard.phoneNumber != null)
+                          //   Spacing.sizedBoxH_16(),
+                        
                           Text(
                             garageayard.description ?? '',
                             style: Theme.of(context).textTheme.bodyLarge,

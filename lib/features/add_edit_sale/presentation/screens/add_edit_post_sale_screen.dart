@@ -635,9 +635,9 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                     ),
                     Spacing.sizedBoxH_20(),
                     AuthField(
-                      name: 'make',
-                      hintText: 'Make*',
-                      labelText: 'Make*',
+                      name: 'brand',
+                      hintText: 'Make',
+                      labelText: 'Make',
                       // validator: FormBuilderValidators.compose([
                       //   FormBuilderValidators.required(
                       //     errorText: 'Brand cannot be empty.',
@@ -970,12 +970,12 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       controller: zipCodeController,
                     ),
                     Spacing.sizedBoxH_24(),
-                    Text(
-                      'Contact Information',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    // Text(
+                    //   'Contact Information',
+                    //   style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    //     fontWeight: FontWeight.w700,
+                    //   ),
+                    // ),
 
                     // Spacing.sizedBoxH_08(),
                     // AuthField(

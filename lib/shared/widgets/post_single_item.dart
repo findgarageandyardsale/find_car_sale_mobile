@@ -92,24 +92,43 @@ class PostSingleItem extends StatelessWidget {
                       warranty: singlePost?.warranty,
                     ),
                   Spacing.sizedBoxH_08(),
-                  if ((singlePost?.availableTimeSlots ?? []).isNotEmpty)
-                    TimerText(
-                      isGarage: isGarage,
-                      fromDetail: false,
-                      date: CustomDateUtils.formatDate(
-                        singlePost?.availableTimeSlots?[0].date ??
-                            DateTime.now(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Price: ',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      time:
-                          '${CustomDateUtils.convertTo12HourFormat(singlePost?.availableTimeSlots?[0].startTime)} - ${CustomDateUtils.convertTo12HourFormat(singlePost?.availableTimeSlots?[0].endTime)}',
-                      days:
-                          ((singlePost?.availableTimeSlots ?? []).length - 1)
-                              .toString(),
-                    ),
-                  Spacing.sizedBoxH_08(),
-                  (fromMap == true)
-                      ? Flexible(child: locationWidget())
-                      : locationWidget(),
+                      Text(
+                        '\$${singlePost?.price!.toStringAsFixed(0)}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Spacing.sizedBoxH_08(),
+                  // if ((singlePost?.availableTimeSlots ?? []).isNotEmpty)
+                  //   TimerText(
+                  //     isGarage: isGarage,
+                  //     fromDetail: false,
+                  //     date: CustomDateUtils.formatDate(
+                  //       singlePost?.availableTimeSlots?[0].date ??
+                  //           DateTime.now(),
+                  //     ),
+                  //     time:
+                  //         '${CustomDateUtils.convertTo12HourFormat(singlePost?.availableTimeSlots?[0].startTime)} - ${CustomDateUtils.convertTo12HourFormat(singlePost?.availableTimeSlots?[0].endTime)}',
+                  //     days:
+                  //         ((singlePost?.availableTimeSlots ?? []).length - 1)
+                  //             .toString(),
+                  //   ),
+                  // Spacing.sizedBoxH_08(),
+                  // (fromMap == true)
+                  //     ? Flexible(child: locationWidget())
+                  //     : locationWidget(),
                 ],
               ),
             ),

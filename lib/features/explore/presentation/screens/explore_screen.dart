@@ -14,6 +14,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/custom_bottomsheet.dart';
 import '../../../../shared/widgets/custom_filter_chip.dart';
 import '../../../../shared/widgets/main_shimmer.dart';
+import '../../../../shared/widgets/unread_message_badge.dart';
 import '../../../authentication/presentation/widgets/auth_field.dart';
 import '../providers/filter_state_provider.dart';
 import '../widgets/slider_dialog_content.dart';
@@ -221,7 +222,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Car Sale')),
+      appBar: AppBar(
+        title: const Text('Car Sale'),
+        actions: const [UnreadMessageBadge()],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'Explore',
         shape: RoundedRectangleBorder(
