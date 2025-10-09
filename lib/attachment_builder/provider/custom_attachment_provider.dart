@@ -160,9 +160,9 @@ class CustomAttachmentNotifier extends StateNotifier<AttachmentState>
         if (listData.isEmpty) {
           return;
         } else {
-          // File croppedFile = await _cropImage(listData[0]);
-          // listData.clear();
-          // listData.add(croppedFile);
+          File croppedFile = await _cropImage(listData[0]);
+          listData.clear();
+          listData.add(croppedFile);
         }
       }
 
