@@ -242,9 +242,13 @@ class ChatRoomTile extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color:
-                      chatRoom.unreadCount > 0
+                      _getUnreadCount() > 0
                           ? AppColors.black
                           : AppColors.lightGrey,
+                  fontWeight:
+                      _getUnreadCount() > 0
+                          ? FontWeight.w600
+                          : FontWeight.normal,
                 ),
               ),
               Spacing.sizedBoxH_08(),
@@ -255,26 +259,38 @@ class ChatRoomTile extends ConsumerWidget {
             ),
           ],
         ),
-        trailing:
-            chatRoom.unreadCount > 0
-                ? Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    chatRoom.unreadCount.toString(),
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-                : null,
+        trailing: _buildUnreadCountBadge(),
       ),
     );
+  }
+
+  int _getUnreadCount() {
+    return isSellerView
+        ? chatRoom.sellerUnreadCount
+        : chatRoom.buyerUnreadCount;
+  }
+
+  Widget _buildUnreadCountBadge() {
+    final unreadCount = _getUnreadCount();
+
+    if (unreadCount > 0) {
+      return Container(
+        padding: const EdgeInsets.all(6),
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+        ),
+        child: Text(
+          unreadCount.toString(),
+          style: const TextStyle(
+            color: AppColors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildChatRoomTitle() {
@@ -301,7 +317,7 @@ class ChatRoomTile extends ConsumerWidget {
     final difference = now.difference(dateTime);
 
     if (difference.inDays == 0) {
-      return DateFormat('HH:mm').format(dateTime);
+      return DateFormat('h:mm a').format(dateTime);
     } else if (difference.inDays == 1) {
       return 'Yesterday';
     } else if (difference.inDays < 7) {

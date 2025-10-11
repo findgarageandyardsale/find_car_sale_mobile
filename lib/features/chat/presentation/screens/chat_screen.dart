@@ -46,11 +46,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _markMessagesAsRead() async {
     final currentUser = ref.read(currentUserProvider).value;
     if (currentUser != null) {
-      final chatService = ref.read(chatServiceProvider);
-      await chatService.markMessagesAsRead(
-        widget.chatRoom.id!,
-        currentUser.userId.toString(),
-      );
+      // Only mark messages as read if the current user is the receiver
+      // (i.e., not the sender of the last message)
+      final lastMessage = widget.chatRoom.lastMessage;
+      if (lastMessage != null &&
+          lastMessage.senderId != currentUser.userId.toString()) {
+        final chatService = ref.read(chatServiceProvider);
+        await chatService.markMessagesAsRead(
+          widget.chatRoom.id!,
+          currentUser.userId.toString(),
+        );
+      }
     }
   }
 
@@ -161,6 +167,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       bottom: true,
       top: false,
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: _buildChatTitle(
             currentUserAsync.value?.userId.toString(),
@@ -321,44 +328,44 @@ class MessageBubble extends ConsumerWidget {
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!isMe) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppColors.primaryContainer,
-              child: otherUserAsync.when(
-                data:
-                    (user) => Text(
-                      _getInitials(_getUserDisplayName(user)),
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                error:
-                    (_, __) => Text(
-                      _getInitials('U'),
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                loading:
-                    () => const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-              ),
-            ),
-            Spacing.sizedBoxW_12(),
-          ],
+          // if (!isMe) ...[
+          //   CircleAvatar(
+          //     radius: 16,
+          //     backgroundColor: AppColors.primaryContainer,
+          //     child: otherUserAsync.when(
+          //       data:
+          //           (user) => Text(
+          //             _getInitials(_getUserDisplayName(user)),
+          //             style: const TextStyle(
+          //               color: AppColors.primary,
+          //               fontSize: 12,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //       error:
+          //           (_, __) => Text(
+          //             _getInitials('U'),
+          //             style: const TextStyle(
+          //               color: AppColors.primary,
+          //               fontSize: 12,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //       loading:
+          //           () => const SizedBox(
+          //             width: 16,
+          //             height: 16,
+          //             child: CircularProgressIndicator(strokeWidth: 2),
+          //           ),
+          //     ),
+          //   ),
+          //   Spacing.sizedBoxW_12(),
+          // ],
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isMe ? AppColors.primary : AppColors.surfaceContainerLow,
+                color: isMe ? AppColors.tertiary : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(20).copyWith(
                   bottomLeft:
                       isMe
@@ -377,59 +384,58 @@ class MessageBubble extends ConsumerWidget {
                     message.text,
                     style: TextStyle(
                       color: isMe ? AppColors.white : AppColors.black,
-                      fontSize: 16,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   Spacing.sizedBoxH_08(),
                   Text(
-                    DateFormat('HH:mm').format(message.timestamp),
+                    DateFormat('h:mm a').format(message.timestamp),
                     style: TextStyle(
-                      color:
-                          isMe
-                              ? AppColors.white.withOpacity(0.7)
-                              : AppColors.lightGrey,
+                      color: isMe ? AppColors.white : AppColors.black,
                       fontSize: 12,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          if (isMe) ...[
-            Spacing.sizedBoxW_12(),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppColors.primary,
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final currentUserAsync = ref.watch(currentUserProvider);
-                  return currentUserAsync.when(
-                    data:
-                        (user) => Text(
-                          _getInitials(_getCurrentUserDisplayName(user)),
-                          style: const TextStyle(
-                            color: AppColors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                    error:
-                        (_, __) => const Icon(
-                          Icons.person,
-                          color: AppColors.white,
-                          size: 16,
-                        ),
-                    loading:
-                        () => const Icon(
-                          Icons.person,
-                          color: AppColors.white,
-                          size: 16,
-                        ),
-                  );
-                },
-              ),
-            ),
-          ],
+          // if (isMe) ...[
+          //   Spacing.sizedBoxW_12(),
+          //   CircleAvatar(
+          //     radius: 16,
+          //     backgroundColor: AppColors.primary,
+          //     child: Consumer(
+          //       builder: (context, ref, child) {
+          //         final currentUserAsync = ref.watch(currentUserProvider);
+          //         return currentUserAsync.when(
+          //           data:
+          //               (user) => Text(
+          //                 _getInitials(_getCurrentUserDisplayName(user)),
+          //                 style: const TextStyle(
+          //                   color: AppColors.white,
+          //                   fontSize: 12,
+          //                   fontWeight: FontWeight.bold,
+          //                 ),
+          //               ),
+          //           error:
+          //               (_, __) => const Icon(
+          //                 Icons.person,
+          //                 color: AppColors.white,
+          //                 size: 16,
+          //               ),
+          //           loading:
+          //               () => const Icon(
+          //                 Icons.person,
+          //                 color: AppColors.white,
+          //                 size: 16,
+          //               ),
+          //         );
+          //       },
+          //     ),
+          //   ),
+          // ],
         ],
       ),
     );
