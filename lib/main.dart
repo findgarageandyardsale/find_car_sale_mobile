@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/firebase_options.dart';
 import 'package:findcarsale/observers.dart';
+import 'package:findcarsale/services/fcm_notification_service.dart';
 import 'package:findcarsale/shared/utils/helper_constant.dart';
 import 'package:findcarsale/shared/utils/print_utils.dart';
 import 'package:oktoast/oktoast.dart';
@@ -12,10 +14,16 @@ import 'routes/app_route.dart';
 import 'shared/theme/app_theme.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-//   PrintUtils.customLog("Handling a background message: ${message.messageId}");
-// }
+// Background message handler for FCM
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  PrintUtils.customLog(
+    "🔔 FCM: Handling background message: ${message.messageId}",
+  );
+  PrintUtils.customLog("🔔 FCM: Title: ${message.notification?.title}");
+  PrintUtils.customLog("🔔 FCM: Body: ${message.notification?.body}");
+  PrintUtils.customLog("🔔 FCM: Data: ${message.data}");
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +48,14 @@ Future<void> main() async {
     PrintUtils.customLog("Stripe initialization failed");
   }
 
+  // Initialize FCM
+  try {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    PrintUtils.customLog("FCM background handler registered");
+  } catch (e) {
+    PrintUtils.customLog("FCM initialization failed: $e");
+  }
+
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.black,
@@ -59,6 +75,9 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(appThemeProvider);
+
+    // Initialize FCM service
+    ref.read(fcmNotificationServiceProvider);
 
     return OKToast(
       child: MaterialApp.router(
