@@ -106,6 +106,10 @@ class ChatRepositoryImpl implements ChatRepository {
     required String garageYardId,
     required String sellerId,
     required String buyerId,
+    required String sellerName,
+    required String buyerName,
+    required String postId,
+    required String postTitle,
     String? garageYardTitle,
     String? chatInitiatedByUsername,
   }) async {
@@ -119,6 +123,14 @@ class ChatRepositoryImpl implements ChatRepository {
 
       final chatRoomData = {
         'participants': participants,
+        'buyer_id': buyerId,
+        'buyer_name': buyerName,
+        'buyer_unread_count': 0,
+        'seller_id': sellerId,
+        'seller_name': sellerName,
+        'seller_unread_count': 0,
+        'post_id': postId,
+        'post_title': postTitle,
         'garage_yard_id': garageYardId,
         'garage_yard_title': garageYardTitle,
         'chat_initiated_by_username': chatInitiatedByUsername,
@@ -185,7 +197,7 @@ class ChatRepositoryImpl implements ChatRepository {
               .collection(_chatRoomsCollection)
               .doc(roomId)
               .collection(_messagesCollection)
-              .orderBy('created_at', descending: true)
+              .orderBy('timestamp', descending: false)
               .limit(50)
               .get();
 
@@ -207,7 +219,7 @@ class ChatRepositoryImpl implements ChatRepository {
         .collection(_chatRoomsCollection)
         .doc(roomId)
         .collection(_messagesCollection)
-        .orderBy('created_at', descending: true)
+        .orderBy('timestamp', descending: false)
         .limit(50)
         .snapshots()
         .map(
@@ -227,20 +239,19 @@ class ChatRepositoryImpl implements ChatRepository {
       final messageData = message.toJson();
       messageData.remove('id');
 
-      // Find the chat room ID by garage yard ID and participants
-      final chatRoomQuery =
+      // Use the chatRoomId directly from the message
+      final chatRoomId = message.chatRoomId;
+
+      // Verify the chat room exists
+      final chatRoomDoc =
           await _firestore
               .collection(_chatRoomsCollection)
-              .where('garage_yard_id', isEqualTo: message.garageYardId)
-              .where('participants', arrayContains: message.senderId)
-              .limit(1)
+              .doc(chatRoomId)
               .get();
 
-      if (chatRoomQuery.docs.isEmpty) {
+      if (!chatRoomDoc.exists) {
         return Left('Chat room not found');
       }
-
-      final chatRoomId = chatRoomQuery.docs.first.id;
 
       final docRef = await _firestore
           .collection(_chatRoomsCollection)
@@ -251,7 +262,7 @@ class ChatRepositoryImpl implements ChatRepository {
       // Update chat room with last message
       await _firestore.collection(_chatRoomsCollection).doc(chatRoomId).update({
         'last_message': message.copyWith(id: docRef.id).toJson(),
-        'updated_at': message.createdAt.toIso8601String(),
+        'updated_at': message.timestamp.toIso8601String(),
         'unread_count': FieldValue.increment(1),
       });
 

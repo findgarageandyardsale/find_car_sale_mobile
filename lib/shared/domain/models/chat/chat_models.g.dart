@@ -9,10 +9,11 @@ part of 'chat_models.dart';
 _$ChatMessageImpl _$$ChatMessageImplFromJson(Map<String, dynamic> json) =>
     _$ChatMessageImpl(
       id: json['id'] as String?,
+      chatRoomId: json['chat_room_id'] as String,
       senderId: json['sender_id'] as String,
       receiverId: json['receiver_id'] as String,
       garageYardId: json['garage_yard_id'] as String,
-      message: json['message'] as String,
+      text: json['text'] as String,
       messageType:
           $enumDecodeNullable(_$MessageTypeEnumMap, json['message_type']) ??
           MessageType.text,
@@ -21,7 +22,9 @@ _$ChatMessageImpl _$$ChatMessageImplFromJson(Map<String, dynamic> json) =>
           json['updated_at'] == null
               ? null
               : DateTime.parse(json['updated_at'] as String),
+      timestamp: DateTime.parse(json['timestamp'] as String),
       isRead: json['is_read'] as bool? ?? false,
+      isDelivered: json['is_delivered'] as bool? ?? false,
       isDeleted: json['is_deleted'] as bool? ?? false,
       imageUrl: json['imageUrl'] as String?,
       fileUrl: json['fileUrl'] as String?,
@@ -31,14 +34,17 @@ _$ChatMessageImpl _$$ChatMessageImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$ChatMessageImplToJson(_$ChatMessageImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'chat_room_id': instance.chatRoomId,
       'sender_id': instance.senderId,
       'receiver_id': instance.receiverId,
       'garage_yard_id': instance.garageYardId,
-      'message': instance.message,
+      'text': instance.text,
       'message_type': _$MessageTypeEnumMap[instance.messageType]!,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'timestamp': instance.timestamp.toIso8601String(),
       'is_read': instance.isRead,
+      'is_delivered': instance.isDelivered,
       'is_deleted': instance.isDeleted,
       'imageUrl': instance.imageUrl,
       'fileUrl': instance.fileUrl,
@@ -58,6 +64,14 @@ _$ChatRoomImpl _$$ChatRoomImplFromJson(
   id: json['id'] as String?,
   participants:
       (json['participants'] as List<dynamic>).map((e) => e as String).toList(),
+  buyerId: json['buyer_id'] as String,
+  buyerName: json['buyer_name'] as String,
+  buyerUnreadCount: (json['buyer_unread_count'] as num?)?.toInt() ?? 0,
+  sellerId: json['seller_id'] as String,
+  sellerName: json['seller_name'] as String,
+  sellerUnreadCount: (json['seller_unread_count'] as num?)?.toInt() ?? 0,
+  postId: json['post_id'] as String,
+  postTitle: json['post_title'] as String,
   garageYardId: json['garage_yard_id'] as String,
   garageYardTitle: json['garage_yard_title'] as String?,
   chatInitiatedByUsername: json['chat_initiated_by_username'] as String?,
@@ -78,6 +92,14 @@ Map<String, dynamic> _$$ChatRoomImplToJson(_$ChatRoomImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'participants': instance.participants,
+      'buyer_id': instance.buyerId,
+      'buyer_name': instance.buyerName,
+      'buyer_unread_count': instance.buyerUnreadCount,
+      'seller_id': instance.sellerId,
+      'seller_name': instance.sellerName,
+      'seller_unread_count': instance.sellerUnreadCount,
+      'post_id': instance.postId,
+      'post_title': instance.postTitle,
       'garage_yard_id': instance.garageYardId,
       'garage_yard_title': instance.garageYardTitle,
       'chat_initiated_by_username': instance.chatInitiatedByUsername,

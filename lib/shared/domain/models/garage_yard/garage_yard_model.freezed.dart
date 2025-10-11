@@ -48,6 +48,7 @@ mixin _$Garageayard {
   bool? get warranty => throw _privateConstructorUsedError;
   @JsonKey(fromJson: convertIntToDouble)
   double? get miles => throw _privateConstructorUsedError;
+  User? get user => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
   String? get brand => throw _privateConstructorUsedError;
   String? get year => throw _privateConstructorUsedError;
@@ -89,6 +90,7 @@ abstract class $GarageayardCopyWith<$Res> {
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
     @JsonKey(fromJson: convertIntToDouble) double? miles,
+    User? user,
     String? model,
     String? brand,
     String? year,
@@ -97,6 +99,7 @@ abstract class $GarageayardCopyWith<$Res> {
 
   $LocationModelCopyWith<$Res>? get location;
   $CarConditionCopyWith<$Res>? get condition;
+  $UserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -130,6 +133,7 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
     Object? isNew = freezed,
     Object? warranty = freezed,
     Object? miles = freezed,
+    Object? user = freezed,
     Object? model = freezed,
     Object? brand = freezed,
     Object? year = freezed,
@@ -217,6 +221,11 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
                     ? _value.miles
                     : miles // ignore: cast_nullable_to_non_nullable
                         as double?,
+            user:
+                freezed == user
+                    ? _value.user
+                    : user // ignore: cast_nullable_to_non_nullable
+                        as User?,
             model:
                 freezed == model
                     ? _value.model
@@ -269,6 +278,20 @@ class _$GarageayardCopyWithImpl<$Res, $Val extends Garageayard>
       return _then(_value.copyWith(condition: value) as $Val);
     });
   }
+
+  /// Create a copy of Garageayard
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserCopyWith<$Res>? get user {
+    if (_value.user == null) {
+      return null;
+    }
+
+    return $UserCopyWith<$Res>(_value.user!, (value) {
+      return _then(_value.copyWith(user: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -298,6 +321,7 @@ abstract class _$$GarageayardImplCopyWith<$Res>
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
     @JsonKey(fromJson: convertIntToDouble) double? miles,
+    User? user,
     String? model,
     String? brand,
     String? year,
@@ -308,6 +332,8 @@ abstract class _$$GarageayardImplCopyWith<$Res>
   $LocationModelCopyWith<$Res>? get location;
   @override
   $CarConditionCopyWith<$Res>? get condition;
+  @override
+  $UserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
@@ -340,6 +366,7 @@ class __$$GarageayardImplCopyWithImpl<$Res>
     Object? isNew = freezed,
     Object? warranty = freezed,
     Object? miles = freezed,
+    Object? user = freezed,
     Object? model = freezed,
     Object? brand = freezed,
     Object? year = freezed,
@@ -427,6 +454,11 @@ class __$$GarageayardImplCopyWithImpl<$Res>
                 ? _value.miles
                 : miles // ignore: cast_nullable_to_non_nullable
                     as double?,
+        user:
+            freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                    as User?,
         model:
             freezed == model
                 ? _value.model
@@ -473,6 +505,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     @JsonKey(name: 'is_new') this.isNew,
     @JsonKey(name: 'warranty') this.warranty,
     @JsonKey(fromJson: convertIntToDouble) this.miles,
+    this.user,
     this.model,
     this.brand,
     this.year,
@@ -543,6 +576,8 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
   @JsonKey(fromJson: convertIntToDouble)
   final double? miles;
   @override
+  final User? user;
+  @override
   final String? model;
   @override
   final String? brand;
@@ -554,7 +589,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, condition: $condition, userId: $userId, attachments: $attachments, isNew: $isNew, warranty: $warranty, miles: $miles, model: $model, brand: $brand, year: $year, phoneNumber: $phoneNumber)';
+    return 'Garageayard(id: $id, title: $title, description: $description, price: $price, status: $status, type: $type, location: $location, promoCode: $promoCode, transactionId: $transactionId, availableTimeSlots: $availableTimeSlots, condition: $condition, userId: $userId, attachments: $attachments, isNew: $isNew, warranty: $warranty, miles: $miles, user: $user, model: $model, brand: $brand, year: $year, phoneNumber: $phoneNumber)';
   }
 
   @override
@@ -578,6 +613,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
       ..add(DiagnosticsProperty('isNew', isNew))
       ..add(DiagnosticsProperty('warranty', warranty))
       ..add(DiagnosticsProperty('miles', miles))
+      ..add(DiagnosticsProperty('user', user))
       ..add(DiagnosticsProperty('model', model))
       ..add(DiagnosticsProperty('brand', brand))
       ..add(DiagnosticsProperty('year', year))
@@ -617,6 +653,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
             (identical(other.warranty, warranty) ||
                 other.warranty == warranty) &&
             (identical(other.miles, miles) || other.miles == miles) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.model, model) || other.model == model) &&
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.year, year) || other.year == year) &&
@@ -644,6 +681,7 @@ class _$GarageayardImpl with DiagnosticableTreeMixin implements _Garageayard {
     isNew,
     warranty,
     miles,
+    user,
     model,
     brand,
     year,
@@ -683,6 +721,7 @@ abstract class _Garageayard implements Garageayard {
     @JsonKey(name: 'is_new') final bool? isNew,
     @JsonKey(name: 'warranty') final bool? warranty,
     @JsonKey(fromJson: convertIntToDouble) final double? miles,
+    final User? user,
     final String? model,
     final String? brand,
     final String? year,
@@ -734,6 +773,8 @@ abstract class _Garageayard implements Garageayard {
   @override
   @JsonKey(fromJson: convertIntToDouble)
   double? get miles;
+  @override
+  User? get user;
   @override
   String? get model;
   @override

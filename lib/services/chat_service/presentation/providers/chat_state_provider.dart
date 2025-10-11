@@ -20,6 +20,10 @@ class ChatService {
     required String garageYardId,
     required String sellerId,
     required String buyerId,
+    required String sellerName,
+    required String buyerName,
+    required String postId,
+    required String postTitle,
     String? garageYardTitle,
     String? chatInitiatedByUsername,
   }) async {
@@ -40,6 +44,10 @@ class ChatService {
         garageYardId: garageYardId,
         sellerId: sellerId,
         buyerId: buyerId,
+        sellerName: sellerName,
+        buyerName: buyerName,
+        postId: postId,
+        postTitle: postTitle,
         garageYardTitle: garageYardTitle,
         chatInitiatedByUsername: chatInitiatedByUsername,
       );
@@ -56,10 +64,11 @@ class ChatService {
 
   // Send message
   Future<bool> sendMessage({
+    required String chatRoomId,
     required String senderId,
     required String receiverId,
     required String garageYardId,
-    required String message,
+    required String text,
     MessageType messageType = MessageType.text,
     String? imageUrl,
     String? fileUrl,
@@ -67,16 +76,21 @@ class ChatService {
   }) async {
     try {
       PrintUtils.customLog(
-        'Sending message: senderId=$senderId, receiverId=$receiverId, garageYardId=$garageYardId, message=$message',
+        'Sending message: chatRoomId=$chatRoomId, senderId=$senderId, receiverId=$receiverId, garageYardId=$garageYardId, text=$text',
       );
 
+      final now = DateTime.now();
       final chatMessage = ChatMessage(
+        chatRoomId: chatRoomId,
         senderId: senderId,
         receiverId: receiverId,
         garageYardId: garageYardId,
-        message: message,
+        text: text,
         messageType: messageType,
-        createdAt: DateTime.now(),
+        createdAt: now,
+        timestamp: now,
+        isRead: false,
+        isDelivered: false,
         imageUrl: imageUrl,
         fileUrl: fileUrl,
         replyTo: replyTo,

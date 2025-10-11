@@ -37,6 +37,10 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
   isNew: json['is_new'] as bool?,
   warranty: json['warranty'] as bool?,
   miles: convertIntToDouble(json['miles']),
+  user:
+      json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
   model: json['model'] as String?,
   brand: json['brand'] as String?,
   year: json['year'] as String?,
@@ -61,6 +65,7 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
       'is_new': instance.isNew,
       'warranty': instance.warranty,
       'miles': instance.miles,
+      'user': instance.user,
       'model': instance.model,
       'brand': instance.brand,
       'year': instance.year,

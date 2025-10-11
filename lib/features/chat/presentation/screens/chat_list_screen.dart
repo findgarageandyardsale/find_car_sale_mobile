@@ -88,19 +88,51 @@ class ChatListScreen extends ConsumerWidget {
           );
         }
 
-        return ListView.builder(
+        // Separate chat rooms into seller and buyer sections
+        final sellerChatRooms =
+            chatRooms.where((room) => room.sellerId == userId).toList();
+        final buyerChatRooms =
+            chatRooms.where((room) => room.buyerId == userId).toList();
+
+        return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          itemCount: chatRooms.length,
-          itemBuilder: (context, index) {
-            final chatRoom = chatRooms[index];
-            return ChatRoomTile(
-              chatRoom: chatRoom,
-              currentUserId: userId,
-              onTap: () {
-                context.router.push(ChatScreen(chatRoom: chatRoom));
-              },
-            );
-          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Seller Section
+              if (sellerChatRooms.isNotEmpty) ...[
+                _buildSectionHeader('As Seller', sellerChatRooms.length),
+                Spacing.sizedBoxH_12(),
+                ...sellerChatRooms.map(
+                  (chatRoom) => ChatRoomTile(
+                    chatRoom: chatRoom,
+                    currentUserId: userId,
+                    isSellerView: true,
+                    onTap: () {
+                      context.router.push(ChatScreen(chatRoom: chatRoom));
+                    },
+                  ),
+                ),
+                Spacing.sizedBoxH_24(),
+              ],
+
+              // Buyer Section
+              if (buyerChatRooms.isNotEmpty) ...[
+                _buildSectionHeader('As Buyer', buyerChatRooms.length),
+                Spacing.sizedBoxH_12(),
+                ...buyerChatRooms.map(
+                  (chatRoom) => ChatRoomTile(
+                    chatRoom: chatRoom,
+                    currentUserId: userId,
+                    isSellerView: false,
+                    onTap: () {
+                      context.router.push(ChatScreen(chatRoom: chatRoom));
+                    },
+                  ),
+                ),
+              ],
+            ],
+          ),
         );
       },
       error:
@@ -110,17 +142,50 @@ class ChatListScreen extends ConsumerWidget {
           () => const CustomLoadingOverlay(isLoading: true, child: SizedBox()),
     );
   }
+
+  Widget _buildSectionHeader(String title, int count) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
+        ),
+        Spacing.sizedBoxW_08(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            count.toString(),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class ChatRoomTile extends ConsumerWidget {
   final ChatRoom chatRoom;
   final String currentUserId;
+  final bool isSellerView;
   final VoidCallback onTap;
 
   const ChatRoomTile({
     super.key,
     required this.chatRoom,
     required this.currentUserId,
+    required this.isSellerView,
     required this.onTap,
   });
 
@@ -146,14 +211,10 @@ class ChatRoomTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final otherUserId = chatRoom.participants.firstWhere(
-      (id) => id != currentUserId,
-    );
-
-    final otherUserAsync = ref.watch(chatUserProvider(otherUserId));
-    final garageYardAsync = ref.watch(
-      garageYardProvider(chatRoom.garageYardId),
-    );
+    // Get the other user's ID and name based on the view
+    final otherUserId = isSellerView ? chatRoom.buyerId : chatRoom.sellerId;
+    final otherUserName =
+        isSellerView ? chatRoom.buyerName : chatRoom.sellerName;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -161,31 +222,22 @@ class ChatRoomTile extends ConsumerWidget {
         onTap: onTap,
         leading: CircleAvatar(
           backgroundColor: AppColors.primaryContainer,
-          child: otherUserAsync.when(
-            data:
-                (user) => Text(
-                  _getInitials(_getUserDisplayName(user)),
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-            error: (_, __) => const Icon(Icons.person),
-            loading: () => const CircularProgressIndicator(),
+          child: Text(
+            _getInitials(otherUserName),
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
         ),
-        title: _buildChatRoomTitle(
-          otherUserAsync,
-          garageYardAsync,
-          currentUserId,
-        ),
+        title: _buildChatRoomTitle(),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (chatRoom.lastMessage != null) ...[
               Text(
-                chatRoom.lastMessage!.message,
+                chatRoom.lastMessage!.text,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -225,57 +277,23 @@ class ChatRoomTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildChatRoomTitle(
-    AsyncValue<ChatUser?> otherUserAsync,
-    AsyncValue<Garageayard?> garageYardAsync,
-    String currentUserId,
-  ) {
-    // Get the post title from chat room or garage yard data
-    final postTitle =
-        chatRoom.garageYardTitle ?? garageYardAsync.value?.title ?? 'Post';
-    final isSeller =
-        currentUserId.toString() == chatRoom.participants[0].toString();
+  Widget _buildChatRoomTitle() {
+    // Get the post title from chat room
+    final postTitle = chatRoom.postTitle;
 
-    return otherUserAsync.when(
-      data: (otherUser) {
-        if (!isSeller) {
-          return Text(
-            postTitle,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          );
-        }
-
-        // Check if current user is the seller by comparing with garage yard owner
-        final isCurrentUserSeller =
-            garageYardAsync.value?.userId.toString() == currentUserId;
-
-        if (isCurrentUserSeller) {
-          // For seller: show "Post Title (Chat Initiated Username)"
-          // Use the chatInitiatedByUsername (the person who started the chat)
-          final username = chatRoom.chatInitiatedByUsername ?? '';
-          return Text(
-            '$postTitle ($username)',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          );
-        } else {
-          // For buyer: show "Post Title"
-          return Text(
-            postTitle,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          );
-        }
-      },
-      error:
-          (_, __) => Text(
-            postTitle,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-      loading:
-          () => const Text(
-            'Loading...',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-    );
+    if (isSellerView) {
+      // For seller: show "Post Title (Buyer Name)"
+      return Text(
+        '$postTitle (${chatRoom.buyerName})',
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      );
+    } else {
+      // For buyer: show "Post Title"
+      return Text(
+        postTitle,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      );
+    }
   }
 
   String _formatDateTime(DateTime dateTime) {

@@ -9,6 +9,10 @@ abstract class ChatRepository {
     required String garageYardId,
     required String sellerId,
     required String buyerId,
+    required String sellerName,
+    required String buyerName,
+    required String postId,
+    required String postTitle,
     String? garageYardTitle,
     String? chatInitiatedByUsername,
   });

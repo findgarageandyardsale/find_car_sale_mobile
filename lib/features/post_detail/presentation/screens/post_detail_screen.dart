@@ -17,12 +17,9 @@ import '../../../../shared/domain/models/garage_yard/garage_yard_model.dart';
 import '../../../../shared/domain/models/user/user_model.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/app_utils.dart';
-import '../../../../shared/utils/cusotm_date_utils.dart';
 import '../../../../shared/utils/map_utils.dart';
 import '../../../../shared/widgets/custom_loading.dart';
 import '../../../../shared/widgets/decription_chip.dart';
-import '../../../../shared/widgets/status_chip.dart';
-import '../../../../shared/widgets/timer_text.dart';
 import '../widgets/custom_carousel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -685,6 +682,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       final chatRoom = await chatService.createOrGetChatRoom(
         garageYardId: garageayard.id.toString(),
         sellerId: garageayard.userId.toString(),
+        sellerName:'${garageayard.user?.firstName} ${garageayard.user?.lastName}',
+        buyerName: '${currentUser.firstName} ${currentUser.lastName}',
+        postId: garageayard.id.toString(),
+        postTitle: garageayard.title ?? '',
         buyerId: currentUser.userId.toString(),
         garageYardTitle: garageayard.title,
         chatInitiatedByUsername:

@@ -73,10 +73,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       final chatService = ref.read(chatServiceProvider);
       final success = await chatService.sendMessage(
+        chatRoomId: widget.chatRoom.id!,
         senderId: currentUser.userId.toString(),
         receiverId: otherUserId,
         garageYardId: widget.chatRoom.garageYardId,
-        message: _messageController.text.trim(),
+        text: _messageController.text.trim(),
       );
 
       if (success) {
@@ -197,7 +198,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
                   return ListView.builder(
                     controller: _scrollController,
-                    reverse: true,
+                    reverse: false,
                     padding: const EdgeInsets.all(16),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
@@ -373,7 +374,7 @@ class MessageBubble extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.message,
+                    message.text,
                     style: TextStyle(
                       color: isMe ? AppColors.white : AppColors.black,
                       fontSize: 16,
@@ -381,7 +382,7 @@ class MessageBubble extends ConsumerWidget {
                   ),
                   Spacing.sizedBoxH_08(),
                   Text(
-                    DateFormat('HH:mm').format(message.createdAt),
+                    DateFormat('HH:mm').format(message.timestamp),
                     style: TextStyle(
                       color:
                           isMe

@@ -2,6 +2,7 @@
 //
 //     final garageayard = garageayardFromJson(jsonString);
 
+import 'package:findcarsale/shared/domain/models/user/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:findcarsale/shared/domain/models/attachment_file/attachment_model.dart';
@@ -29,6 +30,7 @@ class Garageayard with _$Garageayard {
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
     @JsonKey(fromJson: convertIntToDouble) double? miles,
+    User? user,
     String? model,
     String? brand,
     String? year,
