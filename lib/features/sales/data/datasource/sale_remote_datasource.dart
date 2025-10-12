@@ -15,6 +15,9 @@ abstract class SaleDatasource {
     required int skip,
     required String query,
   });
+  Future<Either<AppException, Map<String, dynamic>>> markAsSold({
+    required int id,
+  });
 }
 
 class SaleRemoteDatasource extends SaleDatasource {
@@ -76,6 +79,30 @@ class SaleRemoteDatasource extends SaleDatasource {
       }
       final paginatedResponse = PaginatedResponse.fromJson(jsonData);
       return Right(paginatedResponse);
+    });
+  }
+
+  @override
+  Future<Either<AppException, Map<String, dynamic>>> markAsSold({
+    required int id,
+  }) async {
+    final response = await networkService.put(
+      '${AppConfigs.mySaleEndpoint}$id/',
+      data: {'status': 'Sold'},
+    );
+
+    return response.fold((l) => Left(l), (r) {
+      final jsonData = r.data;
+      if (jsonData == null) {
+        return Left(
+          AppException(
+            identifier: 'markAsSold',
+            statusCode: 0,
+            message: 'The data is not in the valid format.',
+          ),
+        );
+      }
+      return Right(jsonData);
     });
   }
 }

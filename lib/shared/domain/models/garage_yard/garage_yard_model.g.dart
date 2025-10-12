@@ -75,6 +75,7 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
 const _$StatusEnumEnumMap = {
   StatusEnum.active: 'Active',
   StatusEnum.expired: 'Expired',
+  StatusEnum.sold: 'Sold',
 };
 
 const _$GarageYardTypeEnumMap = {

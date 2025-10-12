@@ -116,7 +116,6 @@ class ExploreNotifier extends StateNotifier<ExploreState> {
         );
       }
   */
-
   void resetState() {
     if (mounted) state = const ExploreState.initial();
   }
@@ -125,7 +124,7 @@ class ExploreNotifier extends StateNotifier<ExploreState> {
 class DetailPageNotifier extends StateNotifier<FormzState> {
   final ExploreRepository repository;
 
-  DetailPageNotifier(this.repository) : super(const FormzState.loading());
+  DetailPageNotifier(this.repository) : super(const FormzState.initial());
 
   void fetchPostDetails(int? postId) async {
     try {
@@ -138,6 +137,32 @@ class DetailPageNotifier extends StateNotifier<FormzState> {
         ),
         (data) {
           return FormzState.success(data: data);
+        },
+      );
+    } catch (e) {
+      state = FormzState.failure(
+        AppException(message: e.toString(), statusCode: 0, identifier: ''),
+      );
+    }
+  }
+}
+
+class MarkAsSoldNotifier extends StateNotifier<FormzState> {
+  final ExploreRepository repository;
+
+  MarkAsSoldNotifier(this.repository) : super(const FormzState.initial());
+
+  void markAsSold(int? postId) async {
+    try {
+      state = const FormzState.loading();
+      final postDetails = await repository.markAsSold(id: postId ?? 0);
+
+      state = postDetails.fold(
+        (failure) => FormzState.failure(
+          AppException(message: failure.message, statusCode: 0, identifier: ''),
+        ),
+        (data) {
+          return FormzState.success();
         },
       );
     } catch (e) {

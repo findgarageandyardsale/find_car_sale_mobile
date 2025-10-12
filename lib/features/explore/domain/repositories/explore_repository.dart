@@ -9,4 +9,7 @@ abstract class ExploreRepository {
     required Map<String, dynamic> filter,
   });
   Future<Either<AppException, Garageayard>> fetchDetailPost({required int? id});
+  Future<Either<AppException, String>> markAsSold({
+    required int id,
+  });
 }

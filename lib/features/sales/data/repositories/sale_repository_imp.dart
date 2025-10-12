@@ -13,6 +13,9 @@ abstract class SaleRepository {
     required int page,
     required String query,
   });
+  Future<Either<AppException, Map<String, dynamic>>> markAsSold({
+    required int id,
+  });
 }
 
 class SaleRepositoryImpl extends SaleRepository {
@@ -36,5 +39,12 @@ class SaleRepositoryImpl extends SaleRepository {
     required String query,
   }) {
     return exploreDatasource.searchPaginatedPosts(skip: page, query: query);
+  }
+
+  @override
+  Future<Either<AppException, Map<String, dynamic>>> markAsSold({
+    required int id,
+  }) {
+    return exploreDatasource.markAsSold(id: id);
   }
 }

@@ -27,4 +27,11 @@ class ExploreRepositoryImpl extends ExploreRepository {
   }) {
     return exploreDatasource.fetchDetailPosts(id: id);
   }
+
+  @override
+  Future<Either<AppException, String>> markAsSold({
+    required int id,
+  }) {
+    return exploreDatasource.markAsSold(id: id);
+  }
 }

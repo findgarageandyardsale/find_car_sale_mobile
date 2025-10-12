@@ -1,3 +1,4 @@
+import 'package:findcarsale/shared/constants/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:findcarsale/shared/theme/app_colors.dart';
 
@@ -49,6 +50,7 @@ class ActionButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) Icon(icon, color: iconColor),
+            if (icon != null) Spacing.sizedBoxW_08(),
             Text(
               label,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(

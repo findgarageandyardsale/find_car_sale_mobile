@@ -4,7 +4,7 @@ import 'package:findcarsale/shared/presentation/formz_state.dart';
 
 import '../../../../services/location_service/presentation/map_notifier_provider.dart';
 import '../../domain/providers/explore_providers.dart';
-import 'state/explore_notifier.dart';
+import '../../presentation/providers/state/explore_notifier.dart';
 import 'state/explore_state.dart';
 
 // final mapControllerState = StateProvider<GoogleMapController?>((ref) {
@@ -69,4 +69,9 @@ final detailPageProvider =
     StateNotifierProvider.autoDispose<DetailPageNotifier, FormzState>((ref) {
       final repository = ref.read(exploreRepositoryProvider);
       return DetailPageNotifier(repository);
+    });
+final markAsSoldProvider =
+    StateNotifierProvider.autoDispose<MarkAsSoldNotifier, FormzState>((ref) {
+      final repository = ref.read(exploreRepositoryProvider);
+      return MarkAsSoldNotifier(repository);
     });

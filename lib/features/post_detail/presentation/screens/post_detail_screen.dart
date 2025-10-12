@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:findcarsale/shared/presentation/formz_state.dart';
 import 'package:findcarsale/shared/widgets/action_button.dart';
 import 'package:findcarsale/shared/widgets/no_data.dart';
 import 'package:flutter/foundation.dart';
@@ -156,20 +157,33 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserAsyncValue = ref.watch(currentUserProvider);
+    final markState = ref.watch(markAsSoldProvider);
 
     final detailState = ref.watch(detailPageProvider);
-    // final detailDeta = DummyDataService.getDummyGarageYardById(
-    //   widget.garageayard.id ?? 0,
-    // );
 
-    // Use detailDeta for the detail page
-    // final garageayard = detailDeta ?? widget.garageayard;
-    // _loadCustomMarker(garageayard);
-    // bool isGarage = garageayard.type == GarageYardType.garage;
-    // StatusEnum? status = garageayard.status;
+    ref.listen(markAsSoldProvider, (previous, next) {
+      next.maybeWhen(
+        success: (data) {
+          CustomToast.showToast(
+            'Post marked as sold',
+            status: ToastStatus.success,
+          );
+          ref
+              .read(detailPageProvider.notifier)
+              .fetchPostDetails(widget.garageayard.id);
+        },
+        failure: (error) {
+          CustomToast.showToast(
+            'Mark as sold failed',
+            status: ToastStatus.error,
+          );
+        },
+        orElse: () {},
+      );
+    });
 
     return CustomLoadingOverlay(
-      isLoading: _isLoadingChat,
+      isLoading: _isLoadingChat || markState is Loading,
       child: context.doublePos(
         isGarage: true,
         isActive: widget.isActive,
@@ -178,12 +192,22 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             if (data == null) {
               return const SizedBox.shrink();
             } else {
-              // Only show chat button if user is not the seller
               // Use detailState to get the userId from fetched data
               return detailState.maybeWhen(
                 success: (garageayard) {
+                  // Check if current user is the post owner
                   if (garageayard.userId != null &&
+                      garageayard.userId == data.userId) {
+                    // Show owner action buttons (Edit and Mark as Sold)
+                    return _buildOwnerActionButtons(
+                      context,
+                      ref,
+                      data,
+                      garageayard,
+                    );
+                  } else if (garageayard.userId != null &&
                       garageayard.userId != data.userId) {
+                    // Show chat button if user is not the seller
                     return _buildChatButton(context, ref, data);
                   }
                   return const SizedBox.shrink();
@@ -247,7 +271,6 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             _loadCustomCircle();
             bool isGarage = true;
             // garageayard.type == GarageYardType.garage;
-            StatusEnum? status = garageayard.status;
             return SafeArea(
               child: SingleChildScrollView(
                 child: Column(
@@ -433,150 +456,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                             ),
                           Spacing.sizedBoxH_16(),
 
-                          // if (status != null) StatusChip(status: status),
-                          // if (status != null) Spacing.sizedBoxH_16(),
-                          // Column(
-                          //   children:
-                          //       (garageayard.availableTimeSlots ?? [])
-                          //           .map(
-                          //             (e) => Column(
-                          //               children: [
-                          //                 TimerText(
-                          //                   fromDetail: true,
-                          //                   isGarage: isGarage,
-                          //                   date: CustomDateUtils.formatDate(
-                          //                     e.date ?? DateTime.now(),
-                          //                   ),
-                          //                   time:
-                          //                       '${CustomDateUtils.convertTo12HourFormat(e.startTime)} - ${CustomDateUtils.convertTo12HourFormat(e.endTime)}',
-                          //                 ),
-                          //                 Spacing.sizedBoxH_08(),
-                          //               ],
-                          //             ),
-                          //           )
-                          //           .toList(),
-                          // ),
-                          // Spacing.sizedBoxH_08(),
-
-                          // Enhanced Location Section
-                          // Container(
-                          //   padding: const EdgeInsets.all(16.0),
-                          //   decoration: BoxDecoration(
-                          //     color: Colors.blue[50],
-                          //     borderRadius: BorderRadius.circular(12),
-                          //     border: Border.all(color: Colors.blue[200]!),
-                          //   ),
-                          //   child: Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     children: [
-                          //       Row(
-                          //         children: [
-                          //           Icon(
-                          //             Icons.location_on,
-                          //             color: Colors.blue[600],
-                          //             size: 20,
-                          //           ),
-                          //           const SizedBox(width: 8),
-                          //           Text(
-                          //             'Location',
-                          //             style: Theme.of(
-                          //               context,
-                          //             ).textTheme.titleMedium?.copyWith(
-                          //               fontWeight: FontWeight.w600,
-                          //               color: Colors.blue[600],
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //       Spacing.sizedBoxH_08(),
-                          //       LocationText(
-                          //         fromDetail: true,
-                          //         isGarage: isGarage,
-                          //         location: AppUtils.formatLocationAsAddress(
-                          //           garageayard.location ?? const LocationModel(),
-                          //         ),
-                          //       ),
-                          //       if (garageayard.location?.addressLine !=
-                          //           null) ...[
-                          //         Spacing.sizedBoxH_04(),
-                          //         Text(
-                          //           garageayard.location!.addressLine!,
-                          //           style: Theme.of(context).textTheme.bodyMedium
-                          //               ?.copyWith(color: Colors.grey[600]),
-                          //         ),
-                          //       ],
-                          //       if (garageayard.location?.zipCode != null) ...[
-                          //         Spacing.sizedBoxH_04(),
-                          //         Text(
-                          //           'ZIP: ${garageayard.location!.zipCode!}',
-                          //           style: Theme.of(context).textTheme.bodySmall
-                          //               ?.copyWith(color: Colors.grey[500]),
-                          //         ),
-                          //       ],
-                          //     ],
-                          //   ),
-                          // ),
                           Spacing.sizedBoxH_16(),
 
-                          // Contact Information Section
-                          // if (garageayard.phoneNumber != null)
-                          //   Container(
-                          //     padding: const EdgeInsets.all(16.0),
-                          //     decoration: BoxDecoration(
-                          //       color: Colors.green[50],
-                          //       borderRadius: BorderRadius.circular(12),
-                          //       border: Border.all(color: Colors.green[200]!),
-                          //     ),
-                          //     child: Column(
-                          //       crossAxisAlignment: CrossAxisAlignment.start,
-                          //       children: [
-                          //         Row(
-                          //           children: [
-                          //             Icon(
-                          //               Icons.phone,
-                          //               color: Colors.green[600],
-                          //               size: 20,
-                          //             ),
-                          //             const SizedBox(width: 8),
-                          //             Text(
-                          //               'Contact Information',
-                          //               style: Theme.of(
-                          //                 context,
-                          //               ).textTheme.titleMedium?.copyWith(
-                          //                 fontWeight: FontWeight.w600,
-                          //                 color: Colors.green[600],
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //         Spacing.sizedBoxH_08(),
-                          //         Row(
-                          //           children: [
-                          //             Text(
-                          //               'Phone: ',
-                          //               style: Theme.of(
-                          //                 context,
-                          //               ).textTheme.bodyMedium?.copyWith(
-                          //                 fontWeight: FontWeight.w500,
-                          //               ),
-                          //             ),
-                          //             Text(
-                          //               garageayard.phoneNumber!,
-                          //               style: Theme.of(
-                          //                 context,
-                          //               ).textTheme.bodyMedium?.copyWith(
-                          //                 color: Colors.green[700],
-                          //                 fontWeight: FontWeight.w600,
-                          //               ),
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // if (garageayard.phoneNumber != null)
-                          //   Spacing.sizedBoxH_16(),
-                        
                           Text(
                             garageayard.description ?? '',
                             style: Theme.of(context).textTheme.bodyLarge,
@@ -649,6 +530,113 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     );
   }
 
+  Widget _buildOwnerActionButtons(
+    BuildContext context,
+    WidgetRef ref,
+    User currentUser,
+    Garageayard garageayard,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: ActionButton(
+              label: 'Edit Post',
+              onPressed: () => _editPost(context, ref, garageayard),
+              borderColor: AppColors.primary,
+              buttonColor: AppColors.primary,
+              textColor: AppColors.white,
+              icon: Icons.edit,
+            ),
+          ),
+          const SizedBox(width: 12),
+          if (garageayard.status != StatusEnum.expired &&
+              garageayard.status != StatusEnum.sold)
+            Expanded(
+              child: ActionButton(
+                label:
+                    garageayard.status == StatusEnum.expired
+                        ? 'Mark as Available'
+                        : 'Mark as Sold',
+                onPressed: () => _togglePostStatus(context, ref, garageayard),
+                borderColor:
+                    garageayard.status == StatusEnum.expired
+                        ? AppColors.green
+                        : Colors.red,
+                buttonColor:
+                    garageayard.status == StatusEnum.expired
+                        ? AppColors.green
+                        : Colors.red,
+                textColor: AppColors.white,
+                icon:
+                    garageayard.status == StatusEnum.expired
+                        ? Icons.check_circle
+                        : Icons.sell,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _editPost(BuildContext context, WidgetRef ref, Garageayard garageayard) {
+    context.router.push(AddEditPostSaleScreen(garageayard: garageayard)).then((
+      val,
+    ) {
+      if (val == true) {
+        ref.read(saleNotifierProvider.notifier)
+          ..resetState()
+          ..fetchExplorePosts();
+        // Refresh the detail page
+        ref.read(detailPageProvider.notifier).fetchPostDetails(garageayard.id);
+      }
+    });
+  }
+
+  Future<void> _togglePostStatus(
+    BuildContext context,
+    WidgetRef ref,
+    Garageayard garageayard,
+  ) async {
+    try {
+      // Show confirmation dialog
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Mark as Sold?'),
+              content: Text(
+                'This will mark your post as sold and remove it from active listings.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: AppColors.white,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Mark Sold'),
+                ),
+              ],
+            ),
+      );
+
+      if (confirmed == true) {
+        ref.read(markAsSoldProvider.notifier).markAsSold(garageayard.id);
+      }
+    } catch (e) {
+      CustomToast.showToast(
+        'Error updating post status',
+        status: ToastStatus.error,
+      );
+    }
+  }
+
   Future<void> _initiateChat(
     BuildContext context,
     WidgetRef ref,
@@ -682,7 +670,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       final chatRoom = await chatService.createOrGetChatRoom(
         garageYardId: garageayard.id.toString(),
         sellerId: garageayard.userId.toString(),
-        sellerName:'${garageayard.user?.firstName} ${garageayard.user?.lastName}',
+        sellerName:
+            '${garageayard.user?.firstName} ${garageayard.user?.lastName}',
         buyerName: '${currentUser.firstName} ${currentUser.lastName}',
         postId: garageayard.id.toString(),
         postTitle: garageayard.title ?? '',

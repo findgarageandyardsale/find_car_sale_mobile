@@ -60,6 +60,8 @@ enum StatusEnum {
   active,
   @JsonValue('Expired')
   expired,
+  @JsonValue('Sold')
+  sold,
 }
 
 // Enum for GarageYardType
