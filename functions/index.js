@@ -3,7 +3,8 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// Cloud Function to send push notification when a chat message is created
+// Cloud Function to send push notification when a chat message is created - COMMENTED OUT TO DISABLE NOTIFICATIONS
+/*
 exports.sendChatNotification = functions.firestore
     .document('chat_rooms/{chatRoomId}/messages/{messageId}')
     .onCreate(async (snap, context) => {
@@ -144,3 +145,7 @@ exports.sendChatNotification = functions.firestore
             return null;
         }
     });
+*/
+
+// NOTIFICATION FUNCTION DISABLED - All notification triggers have been commented out
+console.log('🔔 FCM: Notification function disabled - no notifications will be sent');

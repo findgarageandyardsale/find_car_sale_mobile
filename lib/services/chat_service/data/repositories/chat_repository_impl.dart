@@ -25,6 +25,26 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
+  // Helper method to safely parse unread counts from Firestore data
+  Map<String, dynamic> _sanitizeChatRoomData(Map<String, dynamic> data) {
+    final sanitized = Map<String, dynamic>.from(data);
+
+    // Convert string unread counts to integers
+    if (sanitized['buyer_unread_count'] is String) {
+      sanitized['buyer_unread_count'] =
+          int.tryParse(sanitized['buyer_unread_count']) ?? 0;
+    }
+    if (sanitized['seller_unread_count'] is String) {
+      sanitized['seller_unread_count'] =
+          int.tryParse(sanitized['seller_unread_count']) ?? 0;
+    }
+    if (sanitized['unread_count'] is String) {
+      sanitized['unread_count'] = int.tryParse(sanitized['unread_count']) ?? 0;
+    }
+
+    return sanitized;
+  }
+
   @override
   Future<Either<String, List<ChatRoom>>> getUserChatRooms(String userId) async {
     try {
@@ -37,13 +57,20 @@ class ChatRepositoryImpl implements ChatRepository {
               .collection(_chatRoomsCollection)
               .where('participants', arrayContains: userId)
               .where('is_active', isEqualTo: true)
-              .orderBy('updated_at', descending: true)
               .get();
 
       final chatRooms =
           querySnapshot.docs
-              .map((doc) => ChatRoom.fromJson({'id': doc.id, ...doc.data()}))
+              .map(
+                (doc) => ChatRoom.fromJson({
+                  'id': doc.id,
+                  ..._sanitizeChatRoomData(doc.data()),
+                }),
+              )
               .toList();
+
+      // Sort by updated_at in memory to avoid Firestore index requirement
+      chatRooms.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
       return Right(chatRooms);
     } catch (e) {
@@ -71,7 +98,10 @@ class ChatRepositoryImpl implements ChatRepository {
             final chatRooms =
                 snapshot.docs
                     .map(
-                      (doc) => ChatRoom.fromJson({'id': doc.id, ...doc.data()}),
+                      (doc) => ChatRoom.fromJson({
+                        'id': doc.id,
+                        ..._sanitizeChatRoomData(doc.data()),
+                      }),
                     )
                     .toList();
 
@@ -92,7 +122,10 @@ class ChatRepositoryImpl implements ChatRepository {
         return Right(null);
       }
 
-      final chatRoom = ChatRoom.fromJson({'id': doc.id, ...doc.data()!});
+      final chatRoom = ChatRoom.fromJson({
+        'id': doc.id,
+        ..._sanitizeChatRoomData(doc.data()!),
+      });
 
       return Right(chatRoom);
     } catch (e) {
@@ -178,7 +211,10 @@ class ChatRepositoryImpl implements ChatRepository {
       }
 
       final doc = querySnapshot.docs.first;
-      final chatRoom = ChatRoom.fromJson({'id': doc.id, ...doc.data()});
+      final chatRoom = ChatRoom.fromJson({
+        'id': doc.id,
+        ..._sanitizeChatRoomData(doc.data()),
+      });
 
       return Right(chatRoom);
     } catch (e) {
@@ -197,7 +233,6 @@ class ChatRepositoryImpl implements ChatRepository {
               .collection(_chatRoomsCollection)
               .doc(roomId)
               .collection(_messagesCollection)
-              .orderBy('timestamp', descending: false)
               .limit(50)
               .get();
 
@@ -205,6 +240,9 @@ class ChatRepositoryImpl implements ChatRepository {
           querySnapshot.docs
               .map((doc) => ChatMessage.fromJson({'id': doc.id, ...doc.data()}))
               .toList();
+
+      // Sort by timestamp in memory to avoid Firestore index requirement
+      messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
       return Right(messages);
     } catch (e) {
@@ -219,18 +257,21 @@ class ChatRepositoryImpl implements ChatRepository {
         .collection(_chatRoomsCollection)
         .doc(roomId)
         .collection(_messagesCollection)
-        .orderBy('timestamp', descending: false)
         .limit(50)
         .snapshots()
-        .map(
-          (snapshot) =>
+        .map((snapshot) {
+          final messages =
               snapshot.docs
                   .map(
                     (doc) =>
                         ChatMessage.fromJson({'id': doc.id, ...doc.data()}),
                   )
-                  .toList(),
-        );
+                  .toList();
+
+          // Sort by timestamp in memory to avoid Firestore index requirement
+          messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+          return messages;
+        });
   }
 
   @override
@@ -253,18 +294,38 @@ class ChatRepositoryImpl implements ChatRepository {
         return Left('Chat room not found');
       }
 
+      final chatRoomData = chatRoomDoc.data()!;
+      final buyerId = chatRoomData['buyer_id'] as String?;
+      final sellerId = chatRoomData['seller_id'] as String?;
+      final currentBuyerUnreadCount =
+          (chatRoomData['buyer_unread_count'] as int?) ?? 0;
+      final currentSellerUnreadCount =
+          (chatRoomData['seller_unread_count'] as int?) ?? 0;
+
       final docRef = await _firestore
           .collection(_chatRoomsCollection)
           .doc(chatRoomId)
           .collection(_messagesCollection)
           .add(messageData);
 
-      // Update chat room with last message
-      await _firestore.collection(_chatRoomsCollection).doc(chatRoomId).update({
+      // Determine which user's unread count to increment
+      Map<String, dynamic> updateData = {
         'last_message': message.copyWith(id: docRef.id).toJson(),
         'updated_at': message.timestamp.toIso8601String(),
-        'unread_count': FieldValue.increment(1),
-      });
+      };
+
+      // Increment unread count for the receiver (not the sender)
+      if (message.receiverId == buyerId) {
+        updateData['buyer_unread_count'] = currentBuyerUnreadCount + 1;
+      } else if (message.receiverId == sellerId) {
+        updateData['seller_unread_count'] = currentSellerUnreadCount + 1;
+      }
+
+      // Update chat room with last message and unread counts
+      await _firestore
+          .collection(_chatRoomsCollection)
+          .doc(chatRoomId)
+          .update(updateData);
 
       final sentMessage = message.copyWith(id: docRef.id);
       return Right(sentMessage);
@@ -295,10 +356,34 @@ class ChatRepositoryImpl implements ChatRepository {
     String userId,
   ) async {
     try {
-      await _firestore.collection(_chatRoomsCollection).doc(roomId).update({
+      // Get the current chat room data
+      final chatRoomDoc =
+          await _firestore.collection(_chatRoomsCollection).doc(roomId).get();
+
+      if (!chatRoomDoc.exists) {
+        return Left('Chat room not found');
+      }
+
+      final chatRoomData = chatRoomDoc.data()!;
+      final buyerId = chatRoomData['buyer_id'] as String?;
+      final sellerId = chatRoomData['seller_id'] as String?;
+
+      // Prepare update data
+      Map<String, dynamic> updateData = {
         'last_read_by.$userId': DateTime.now().toIso8601String(),
-        'unread_count': 0,
-      });
+      };
+
+      // Reset unread count for the user who is marking messages as read
+      if (userId == buyerId) {
+        updateData['buyer_unread_count'] = 0;
+      } else if (userId == sellerId) {
+        updateData['seller_unread_count'] = 0;
+      }
+
+      await _firestore
+          .collection(_chatRoomsCollection)
+          .doc(roomId)
+          .update(updateData);
 
       return Right(null);
     } catch (e) {
@@ -441,8 +526,10 @@ class ChatRepositoryImpl implements ChatRepository {
         .doc(roomId)
         .snapshots()
         .map(
-          (snapshot) =>
-              ChatRoom.fromJson({'id': snapshot.id, ...snapshot.data()!}),
+          (snapshot) => ChatRoom.fromJson({
+            'id': snapshot.id,
+            ..._sanitizeChatRoomData(snapshot.data()!),
+          }),
         );
   }
 
@@ -453,11 +540,25 @@ class ChatRepositoryImpl implements ChatRepository {
         .where('participants', arrayContains: userId)
         .where('is_active', isEqualTo: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.fold(
-            0,
-            (sum, doc) => sum + (doc.data()['unread_count'] as int? ?? 0),
-          ),
-        );
+        .map((snapshot) {
+          int totalUnread = 0;
+
+          for (final doc in snapshot.docs) {
+            final data = doc.data();
+            final buyerId = data['buyer_id'] as String?;
+            final sellerId = data['seller_id'] as String?;
+            final buyerUnreadCount = data['buyer_unread_count'] as int? ?? 0;
+            final sellerUnreadCount = data['seller_unread_count'] as int? ?? 0;
+
+            // Check if the user is the buyer or seller and add their respective unread count
+            if (userId == buyerId) {
+              totalUnread += buyerUnreadCount;
+            } else if (userId == sellerId) {
+              totalUnread += sellerUnreadCount;
+            }
+          }
+
+          return totalUnread;
+        });
   }
 }
