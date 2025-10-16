@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:findcarsale/shared/presentation/formz_state.dart';
 import 'package:findcarsale/shared/widgets/action_button.dart';
 import 'package:findcarsale/shared/widgets/no_data.dart';
+import 'package:findcarsale/shared/widgets/sold_overlay.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -171,6 +172,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
           ref
               .read(detailPageProvider.notifier)
               .fetchPostDetails(widget.garageayard.id);
+          ref.read(exploreNotifierProvider);
         },
         failure: (error) {
           CustomToast.showToast(
@@ -286,17 +288,24 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            garageayard.title ?? '',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color:
-                                  isGarage
-                                      ? AppColors.primary
-                                      : AppColors.green,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  garageayard.title ?? '',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        isGarage
+                                            ? AppColors.primary
+                                            : AppColors.green,
+                                  ),
+                                ),
+                              ),
+                              SoldOverlay(),
+                            ],
                           ),
                           Spacing.sizedBoxH_16(),
 

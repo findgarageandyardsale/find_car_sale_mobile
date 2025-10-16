@@ -3,15 +3,12 @@ import 'package:findcarsale/shared/widgets/sold_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:findcarsale/routes/app_route.gr.dart';
 import 'package:findcarsale/shared/domain/models/garage_yard/garage_yard_model.dart';
-import 'package:findcarsale/shared/utils/cusotm_date_utils.dart';
 import 'package:findcarsale/shared/widgets/location_text.dart';
-
 import '../constants/spacing.dart';
 import '../theme/app_colors.dart';
 import '../utils/app_utils.dart';
 import 'file_image_builder.dart';
 import 'car_info_chip.dart';
-import 'timer_text.dart';
 
 class PostSingleItem extends StatelessWidget {
   const PostSingleItem({

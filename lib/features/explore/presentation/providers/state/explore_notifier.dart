@@ -46,6 +46,7 @@ class ExploreNotifier extends StateNotifier<ExploreState> {
             'type': filterState.isGarage == true ? 'Garage' : 'Yard',
           });
         }
+        mapData.remove('status');
         final response = await exploreRepository.fetchExplorePost(
           page: state.page + 1,
           filter: mapData,
