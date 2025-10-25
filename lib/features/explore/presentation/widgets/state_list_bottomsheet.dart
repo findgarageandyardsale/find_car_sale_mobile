@@ -52,8 +52,7 @@ class StateListBottomsheet extends ConsumerWidget {
             padding: EdgeInsets.all(16),
             itemBuilder: (context, index) {
               final state = usStates[index];
-              final isSelected =
-                  filterState.selectedState == state['abbreviation'];
+              final isSelected = filterState.selectedState == state['name'];
 
               return ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -72,9 +71,7 @@ class StateListBottomsheet extends ConsumerWidget {
                 onTap: () {
                   ref
                       .read(filterNotifierProvider.notifier)
-                      .updateSelectedState(
-                        isSelected ? null : state['abbreviation'],
-                      );
+                      .updateSelectedState(isSelected ? null : state['name']);
                   Navigator.of(context).pop();
                 },
               );

@@ -362,42 +362,50 @@ class MessageBubble extends ConsumerWidget {
           //   Spacing.sizedBoxW_12(),
           // ],
           Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isMe ? AppColors.tertiary : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(20).copyWith(
-                  bottomLeft:
-                      isMe
-                          ? const Radius.circular(20)
-                          : const Radius.circular(4),
-                  bottomRight:
-                      isMe
-                          ? const Radius.circular(4)
-                          : const Radius.circular(20),
-                ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: isMe ? AppColors.white : AppColors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: isMe ? AppColors.tertiary : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(20).copyWith(
+                    bottomLeft:
+                        isMe
+                            ? const Radius.circular(20)
+                            : const Radius.circular(4),
+                    bottomRight:
+                        isMe
+                            ? const Radius.circular(4)
+                            : const Radius.circular(20),
                   ),
-                  Spacing.sizedBoxH_08(),
-                  Text(
-                    DateFormat('h:mm a').format(message.timestamp),
-                    style: TextStyle(
-                      color: isMe ? AppColors.white : AppColors.black,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.text,
+                      style: TextStyle(
+                        color: isMe ? AppColors.white : AppColors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
-                ],
+                    Spacing.sizedBoxH_08(),
+                    Text(
+                      DateFormat('h:mm a').format(message.timestamp),
+                      style: TextStyle(
+                        color: isMe ? AppColors.white : AppColors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

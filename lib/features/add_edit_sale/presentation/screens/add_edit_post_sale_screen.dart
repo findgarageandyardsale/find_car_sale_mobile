@@ -577,6 +577,9 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                           errorText: 'Description cannot be empty.',
                         ),
                       ]),
+                      inputFormatters: [
+                        CapitalizeWordsInputFormatter(),
+                      ], // Apply the custom TextInputFormatter
                       textInputAction: TextInputAction.done,
                       keyboardType: TextInputType.multiline,
                     ),
@@ -643,6 +646,9 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                       //     errorText: 'Brand cannot be empty.',
                       //   ),
                       // ]),
+                      inputFormatters: [
+                        CapitalizeWordsInputFormatter(),
+                      ], // Apply the custom TextInputFormatter
                       controller: brandController,
                       // Apply the custom TextInputFormatter
                     ),
@@ -657,6 +663,9 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                           errorText: 'Model cannot be empty.',
                         ),
                       ]),
+                      inputFormatters: [
+                        CapitalizeWordsInputFormatter(),
+                      ], // Apply the custom TextInputFormatter
                       controller: modelController,
                       // Apply the custom TextInputFormatter
                     ),
@@ -735,56 +744,7 @@ class _AddPostSaleScreenState extends ConsumerState<AddEditPostSaleScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            TitleHead(
-                              title: 'Condition',
-
-                              // clearWidget:
-                              //  TextButton.icon(
-                              //   // padding: EdgeInsets.zero,
-                              //   onPressed: () {
-                              //     final controller = TextEditingController();
-                              //     primaryBottomSheet(
-                              //       context,
-                              //       child: Column(
-                              //         children: [
-                              //           AuthField(
-                              //             autoFocus: true,
-                              //             name: 'condition',
-                              //             hintText: 'Condition',
-                              //             labelText: 'Condition',
-                              //             controller: controller,
-                              //           ),
-                              //           Spacing.sizedBoxH_12(),
-                              //           ActionButton(
-                              //             width: double.infinity,
-                              //             label: 'Add Condition',
-                              //             onPressed: () {
-                              //               if (controller.text.isNotEmpty) {
-                              //                 ref
-                              //                     .read(
-                              //                       addCarConditionNotifierProvider
-                              //                           .notifier,
-                              //                     )
-                              //                     .addCateggory(
-                              //                       controller.text,
-                              //                     );
-
-                              //                 Navigator.of(context).pop();
-                              //               }
-                              //             },
-                              //           ),
-                              //         ],
-                              //       ),
-                              //     );
-                              //   },
-                              //   icon: const Icon(Icons.add),
-                              //   label: Text(
-                              //     'Add Condition',
-                              //     style: Theme.of(context).textTheme.labelLarge
-                              //         ?.copyWith(color: AppColors.primary),
-                              //   ),
-                              // ),
-                            ),
+                            TitleHead(title: 'Condition'),
                             CarConditionSelector(cats: cats, isSingle: true),
                             Spacing.sizedBoxH_20(),
                           ],

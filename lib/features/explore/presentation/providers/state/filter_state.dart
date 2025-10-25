@@ -88,7 +88,7 @@ class FilterState {
       if (endDate != null)
         'end_date': CustomDateUtils.formatDateFilter(endDate!),
       if (isGarage != null) 'is_garage': isGarage,
-      if (selectedState != null) 'state': selectedState,
+      if (selectedState != null) 'admin_area': selectedState,
     };
     PrintUtils.customLog('FilterState.toJson: ${jsonEncode(map)}');
     return map;

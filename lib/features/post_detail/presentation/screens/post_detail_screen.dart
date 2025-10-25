@@ -192,7 +192,15 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         actionButton: currentUserAsyncValue.when(
           data: (User? data) {
             if (data == null) {
-              return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ActionButton(
+                  label: 'Login to Chat',
+                  onPressed: () {
+                    context.router.push(LoginScreen());
+                  },
+                ),
+              );
             } else {
               // Use detailState to get the userId from fetched data
               return detailState.maybeWhen(
@@ -212,7 +220,15 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     // Show chat button if user is not the seller
                     return _buildChatButton(context, ref, data);
                   }
-                  return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ActionButton(
+                      label: 'Login to Chat',
+                      onPressed: () {
+                        context.router.push(LoginScreen());
+                      },
+                    ),
+                  );
                 },
                 orElse: () => const SizedBox.shrink(),
               );
@@ -304,7 +320,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                   ),
                                 ),
                               ),
-                              SoldOverlay(),
+                              if (garageayard.status == StatusEnum.sold)
+                                SoldOverlay(),
                             ],
                           ),
                           Spacing.sizedBoxH_16(),
