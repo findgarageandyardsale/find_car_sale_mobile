@@ -202,6 +202,14 @@ class AccountScreen extends ConsumerWidget {
       }
     }
 
+    Future<void> launchPrivacyPolicyUrl() async {
+      final Uri url = Uri.parse(HelperConstant.privacyPolicy);
+
+      if (!await launchUrl(url)) {
+        throw Exception('Could not launch ${HelperConstant.privacyPolicy}');
+      }
+    }
+
     return CustomLoadingOverlay(
       isLoading:
           state is Loading || editstate is Loading || logoutState is Loading,
@@ -365,9 +373,16 @@ class AccountScreen extends ConsumerWidget {
                   ),
                   CustomListTileWidget(
                     icon: Icons.insert_drive_file_outlined,
-                    title: 'Terms and Policy',
+                    title: 'Terms and Conditions',
                     onTap: () {
                       launchTermsAndConditionUrl();
+                    },
+                  ),
+                  CustomListTileWidget(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Privacy Policy',
+                    onTap: () {
+                      launchPrivacyPolicyUrl();
                     },
                   ),
                   currentUserAsyncValue.when(

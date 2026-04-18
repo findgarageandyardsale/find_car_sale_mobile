@@ -25,9 +25,8 @@ class HelperConstant {
           : 'https://apps.apple.com/us/app/findcarsale/6737464722';
 
   static String termsAndConditions =
-      'https://findgarageandyardsale.com/#/terms-and-conditions';
-  static String privacyPolicy =
-      'https://findgarageandyardsale.com/#/privacy-policy';
+      'https://findcarsales.com/terms-and-conditions/';
+  static String privacyPolicy = 'https://findcarsales.com/privacy-policy/';
   static String postPrice = '5';
 
   static int priceForEach = 5;
