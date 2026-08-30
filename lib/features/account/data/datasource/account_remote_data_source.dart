@@ -130,6 +130,9 @@ class AccountRemoteDataSource implements AccountDatasource {
   @override
   Future<Either<AppException, ResponseData>> logout({String? token}) async {
     try {
+      if (token == null) {
+        return Right(ResponseData(data: null, statusCode: 200));
+      }
       final eitherType = await networkService.post(
         AppConfigs.logout,
         data: {'token': token},

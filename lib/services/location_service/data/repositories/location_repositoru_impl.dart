@@ -2,7 +2,6 @@ import 'package:geolocator/geolocator.dart';
 import '../../domain/repositories/location_repository.dart';
 
 class LocationRepositoryImpl implements LocationRepository {
-
   LocationRepositoryImpl();
 
   @override
@@ -13,5 +12,10 @@ class LocationRepositoryImpl implements LocationRepository {
         distanceFilter: 10,
       ),
     );
+  }
+
+  @override
+  Future<bool> isLocationServiceEnabled() async {
+    return await Geolocator.isLocationServiceEnabled();
   }
 }

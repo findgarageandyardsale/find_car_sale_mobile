@@ -79,8 +79,9 @@ class _CustomIntroScreenState extends State<CustomIntroScreen> {
                 });
               },
               itemCount: _introPages.length,
-              itemBuilder: (context, index) {
-                final page = _introPages[index];
+              //lets do this vanumna aba
+              itemBuilder: (context, i) {
+                final page = _introPages[i];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(

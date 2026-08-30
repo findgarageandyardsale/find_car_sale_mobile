@@ -29,6 +29,7 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
       json['condition'] == null
           ? null
           : CarCondition.fromJson(json['condition'] as Map<String, dynamic>),
+  userId: (json['user_id'] as num?)?.toInt(),
   attachments:
       (json['images'] as List<dynamic>?)
           ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
@@ -36,6 +37,10 @@ _$GarageayardImpl _$$GarageayardImplFromJson(
   isNew: json['is_new'] as bool?,
   warranty: json['warranty'] as bool?,
   miles: convertIntToDouble(json['miles']),
+  user:
+      json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
   model: json['model'] as String?,
   brand: json['brand'] as String?,
   year: json['year'] as String?,
@@ -55,10 +60,12 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
       'transaction_id': instance.transactionId,
       'available_time_slots': instance.availableTimeSlots,
       'condition': instance.condition,
+      'user_id': instance.userId,
       'images': instance.attachments,
       'is_new': instance.isNew,
       'warranty': instance.warranty,
       'miles': instance.miles,
+      'user': instance.user,
       'model': instance.model,
       'brand': instance.brand,
       'year': instance.year,
@@ -68,6 +75,7 @@ Map<String, dynamic> _$$GarageayardImplToJson(_$GarageayardImpl instance) =>
 const _$StatusEnumEnumMap = {
   StatusEnum.active: 'Active',
   StatusEnum.expired: 'Expired',
+  StatusEnum.sold: 'Sold',
 };
 
 const _$GarageYardTypeEnumMap = {

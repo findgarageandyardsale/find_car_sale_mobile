@@ -40,6 +40,8 @@ class AddDataNotifier extends StateNotifier<Garageayard?> {
         "latitude": data['latitude'],
         "longitude": data['longitude'],
       });
+      String cleanPrice = data['price']?.replaceAll(',', '') ?? '';
+      final cleanMiles = data['miles']?.replaceAll(',', '') ?? '';
       garageayard = garageayard.copyWith(
         title: data['title'],
         description: data['description'],
@@ -48,11 +50,12 @@ class AddDataNotifier extends StateNotifier<Garageayard?> {
         attachments: state?.attachments ?? [],
         model: data['model'],
         brand: data['brand'],
-        miles: double.tryParse(data['miles']),
+        miles: double.tryParse(cleanMiles),
         warranty: data['warranty'],
         isNew: data['is_new'],
         phoneNumber: data['phone_number'],
         year: data['year'],
+        price: double.tryParse(cleanPrice),
       );
       state = garageayard;
     } catch (e) {

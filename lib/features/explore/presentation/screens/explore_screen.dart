@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/features/explore/presentation/providers/explore_state_provider.dart';
 import 'package:findcarsale/features/explore/presentation/providers/state/explore_state.dart';
-import 'package:findcarsale/features/explore/presentation/providers/state/filter_state.dart';
-import 'package:findcarsale/features/explore/presentation/widgets/categories_list_bottomsheet.dart';
+import 'package:findcarsale/features/explore/presentation/widgets/state_list_bottomsheet.dart';
 import 'package:findcarsale/shared/utils/print_utils.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import '../../../../shared/constants/spacing.dart';
 import '../../../../shared/core/custom_debouncer.dart';
 import '../../../../shared/enum/filter_enum.dart';
@@ -14,6 +12,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/custom_bottomsheet.dart';
 import '../../../../shared/widgets/custom_filter_chip.dart';
 import '../../../../shared/widgets/main_shimmer.dart';
+import '../../../../shared/widgets/unread_message_badge.dart';
 import '../../../authentication/presentation/widgets/auth_field.dart';
 import '../providers/filter_state_provider.dart';
 import '../widgets/slider_dialog_content.dart';
@@ -34,7 +33,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   bool listView = true;
   bool isSearchActive = false;
   bool isLoading = true;
-  DateFilter? selectedDateFilter;
 
   @override
   void initState() {
@@ -79,9 +77,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(exploreNotifierProvider);
-
     final filterState = ref.watch(filterNotifierProvider);
     final debouncer = CustomDebouncer(milliseconds: 900);
+
+    // Initialize explore data when location is available
+    ref.watch(exploreInitializerProvider);
 
     ref.listen(exploreNotifierProvider.select((value) => value), ((
       ExploreState? previous,
@@ -98,78 +98,21 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       }
     }));
 
-    void showDateRangePickerDialog() {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Select Date Range'),
-            content: SizedBox(
-              height: 400, // Set the height of the dialog
-              width: 300, // Set the width of the dialog
-              child: SfDateRangePicker(
-                showTodayButton: false,
-                // maxDate: DateTime(2025, 1, 1),
-                initialSelectedRange: PickerDateRange(
-                  filterState.startDate,
-                  filterState.endDate ?? filterState.startDate,
-                ),
-                monthCellStyle: DateRangePickerMonthCellStyle(
-                  textStyle: Theme.of(context).textTheme.bodyLarge,
-                ),
-                headerStyle: DateRangePickerHeaderStyle(
-                  textAlign: TextAlign.center,
-                  backgroundColor: AppColors.white,
-                  textStyle: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                showActionButtons: true,
-                backgroundColor: AppColors.white,
-                onCancel: () {
-                  Navigator.of(context).pop();
-                },
-                onSubmit: (dateRange) {
-                  if (dateRange is PickerDateRange) {
-                    ref
-                        .read(filterNotifierProvider.notifier)
-                        .updateState(
-                          startDate: dateRange.startDate,
-                          endDate: dateRange.endDate,
-                        );
-                  }
-                  Navigator.of(context).pop();
-                },
-                onSelectionChanged:
-                    (DateRangePickerSelectionChangedArgs args) {},
-                selectionMode: DateRangePickerSelectionMode.range,
-              ),
-            ),
-          );
-        },
-      );
-    }
-
     bool? checkActive(FilterEnum tag) {
       switch (tag) {
         case FilterEnum.all:
           {
             return (filterState.zipCode == null &&
                 filterState.radius == null &&
-                filterState.endDate == null &&
-                filterState.isGarage == null &&
-                (filterState.selectedCategories ?? []).isEmpty);
+                filterState.selectedState == null &&
+                filterState.isGarage == null && filterState.selectedState == null);
           }
 
         case FilterEnum.distance:
           return filterState.radius != null;
 
-        case FilterEnum.condition:
-          return (filterState.selectedCategories ?? []).isNotEmpty;
-        case FilterEnum.date:
-          {
-            return filterState.endDate != null;
-          }
+        case FilterEnum.state:
+          return filterState.selectedState != null;
       }
     }
 
@@ -177,7 +120,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       switch (tag) {
         case FilterEnum.all:
           {
-            selectedDateFilter = null;
             ref.read(filterNotifierProvider.notifier).updateToInitial();
             if (PrintUtils.radiusInAllChip != true) {
               ref.read(filterNotifierProvider.notifier).toRadiusInitalState();
@@ -189,20 +131,18 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             showSliderDialog(context);
           }
 
-        case FilterEnum.condition:
+        case FilterEnum.state:
           {
-            //
-
             primaryBottomSheet(
               padding: EdgeInsets.zero,
               context,
-              child: SafeArea(child: const CategoriesListBottomsheet()),
+              child: SafeArea(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: const StateListBottomsheet(),
+                ),
+              ),
             );
-          }
-
-        case FilterEnum.date:
-          {
-            showDateRangePickerDialog();
           }
       }
     }
@@ -219,7 +159,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Car Sale')),
+      appBar: AppBar(
+        title: const Text('Car Sale'),
+        actions: const [UnreadMessageBadge()],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'Explore',
         shape: RoundedRectangleBorder(
@@ -242,7 +185,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: AuthField(
                   name: 'search',
-                  hintText: 'Search',
+                  hintText: 'Search by name or zip code',
                   controller: searchController,
                   // fillColor: AppColors.surfaceContainerLow,
                   fillColor: AppColors.white,

@@ -24,6 +24,7 @@ import '../../../../shared/presentation/formz_state.dart';
 import '../../../../shared/widgets/custom_loading.dart';
 import '../widgets/circular_user_image_widget.dart';
 import 'package:findcarsale/features/account/presentation/providers/state/logout_provider.dart';
+import 'package:findcarsale/routes/app_route.gr.dart';
 
 @RoutePage()
 class AccountScreen extends ConsumerWidget {
@@ -201,6 +202,14 @@ class AccountScreen extends ConsumerWidget {
       }
     }
 
+    Future<void> launchPrivacyPolicyUrl() async {
+      final Uri url = Uri.parse(HelperConstant.privacyPolicy);
+
+      if (!await launchUrl(url)) {
+        throw Exception('Could not launch ${HelperConstant.privacyPolicy}');
+      }
+    }
+
     return CustomLoadingOverlay(
       isLoading:
           state is Loading || editstate is Loading || logoutState is Loading,
@@ -349,6 +358,13 @@ class AccountScreen extends ConsumerWidget {
                     },
                   ),
                   CustomListTileWidget(
+                    icon: Icons.chat_outlined,
+                    title: 'Messages',
+                    onTap: () {
+                      naviagtion(ChatListScreen());
+                    },
+                  ),
+                  CustomListTileWidget(
                     icon: Icons.info_outline,
                     title: 'About Us',
                     onTap: () {
@@ -357,9 +373,16 @@ class AccountScreen extends ConsumerWidget {
                   ),
                   CustomListTileWidget(
                     icon: Icons.insert_drive_file_outlined,
-                    title: 'Terms and Policy',
+                    title: 'Terms and Conditions',
                     onTap: () {
                       launchTermsAndConditionUrl();
+                    },
+                  ),
+                  CustomListTileWidget(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Privacy Policy',
+                    onTap: () {
+                      launchPrivacyPolicyUrl();
                     },
                   ),
                   currentUserAsyncValue.when(

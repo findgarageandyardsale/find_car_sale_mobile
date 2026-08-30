@@ -35,6 +35,8 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: AboutUsScreen.page),
     AutoRoute(page: TermsConditionScreen.page),
     AutoRoute(page: FeedbackScreen.page),
+    AutoRoute(page: ChatListScreen.page),
+    AutoRoute(page: ChatScreen.page),
   ];
 }
 

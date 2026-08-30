@@ -15,6 +15,7 @@ abstract class ExploreDatasource {
   Future<Either<AppException, Garageayard>> fetchDetailPosts({
     required int? id,
   });
+  Future<Either<AppException, String>> markAsSold({required int id});
 }
 
 class ExploreRemoteDatasource extends ExploreDatasource {
@@ -79,6 +80,51 @@ class ExploreRemoteDatasource extends ExploreDatasource {
               ? Garageayard.fromJson(jsonData[0])
               : Garageayard.fromJson(jsonData['data'] ?? jsonData);
       return Right(paginatedResponse);
+    });
+  }
+
+  @override
+  Future<Either<AppException, String>> markAsSold({required int id}) async {
+    final response = await networkService.post(
+      '${AppConfigs.yardSaleEndpoint}update_status/',
+      data: {
+        'status': 'Sold',
+        'carsale_ids': [id],
+      },
+    );
+
+    return response.fold((l) => Left(l), (r) {
+      final jsonData = r.data;
+      if (jsonData == null) {
+        return Left(
+          AppException(
+            identifier: 'markAsSold',
+            statusCode: 0,
+            message: 'The data is not in the valid format.',
+          ),
+        );
+      }
+
+      // Handle the API response structure: {"status":200,"message":"Success","data":{}}
+      if (jsonData is Map<String, dynamic>) {
+        final status = jsonData['status'];
+        final message = jsonData['message'];
+
+        // Check if the API call was successful
+        if (status == 200 && message == 'Success') {
+          return Right('Post marked as sold successfully');
+        } else {
+          return Left(
+            AppException(
+              identifier: 'markAsSold',
+              statusCode: status ?? 0,
+              message: message ?? 'Failed to mark as sold',
+            ),
+          );
+        }
+      }
+
+      return Right('Post marked as sold successfully');
     });
   }
 }

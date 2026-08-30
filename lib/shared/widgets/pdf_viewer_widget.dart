@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class PDFViewer extends StatelessWidget {
   const PDFViewer({super.key, required this.url});
@@ -7,16 +7,13 @@ class PDFViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const PDF().cachedFromUrl(
-          url,
-          placeholder: (progress) {
-            return const Center(child: CircularProgressIndicator());
-          },
-          errorWidget: (error) => Center(child: Text(error.toString())),
-        ),
-      ],
+    final viewerUrl =
+        'https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(url)}';
+    return InAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri.uri(Uri.parse(viewerUrl))),
+      initialSettings: InAppWebViewSettings(),
+      onLoadStart: (_, __) {},
+      onLoadStop: (_, __) {},
     );
   }
 }

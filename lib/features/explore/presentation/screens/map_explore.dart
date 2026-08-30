@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/shared/domain/models/garage_yard/garage_yard_model.dart';
 import 'package:findcarsale/shared/utils/print_utils.dart';
+import 'package:findcarsale/shared/utils/map_utils.dart';
 import 'package:findcarsale/shared/widgets/post_single_item.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,7 +23,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
   bool onTap = false;
   Garageayard? tapModel;
   BitmapDescriptor? garageIcon;
-  BitmapDescriptor? yardIcon;
   @override
   void initState() {
     super.initState();
@@ -35,7 +35,7 @@ class _MapExploreState extends ConsumerState<MapExplore> {
       final locationState = ref.watch(mapNotifierProvider);
 
       if (locationState.error != null) {
-        ref.read(mapNotifierProvider.notifier).getUserLocation();
+        ref.read(mapNotifierProvider.notifier).retryGetLocation();
       }
     });
   }
@@ -50,10 +50,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
     garageIcon = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(16, 26)),
       'assets/garage.png',
-    );
-    yardIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(16, 26)),
-      'assets/yard.png',
     );
     setState(() {}); // Update the UI once icons are loaded
   }
@@ -72,36 +68,64 @@ class _MapExploreState extends ConsumerState<MapExplore> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(mapNotifierProvider);
-    final state = ref.watch(exploreNotifierProvider);
+    final state = ref.watch(mapExploreNotifierProvider);
     final zool = ref.watch(zoomLevelState);
 
-    // Listen to changes in exploreNotifierProvider
+    // Initialize map explore data when location is available
+    ref.watch(mapExploreInitializerProvider);
 
-    Set<Marker> markers = <Marker>{};
+    Set<Circle> circles = <Circle>{};
     try {
+      PrintUtils.customLog(
+        "Creating circles for ${state.garageYardList.length} locations",
+      );
+
+      // Add a test circle at current location to ensure circles work
+      if (locationState.currentLatLng != null) {
+        circles.add(
+          Circle(
+            circleId: const CircleId('test_circle'),
+            center: locationState.currentLatLng!,
+            radius: MapUtils.halfMileInMeters,
+            fillColor: Colors.green.withOpacity(0.3),
+            strokeColor: Colors.green,
+            strokeWidth: 3,
+            onTap: () => PrintUtils.customLog("Test circle tapped"),
+          ),
+        );
+        PrintUtils.customLog("Added test circle at current location");
+      }
+
       for (var element in state.garageYardList) {
         if (element.location?.latitude != null &&
             element.location?.longitude != null) {
-          // Load the custom marker from assets
+          // Create a circle instead of a marker
+          LatLng position = LatLng(
+            element.location!.latitude!,
+            element.location!.longitude!,
+          );
 
-          markers.add(
-            Marker(
-              markerId: MarkerId('${element.id}'),
-              position: LatLng(
-                element.location!.latitude!,
-                element.location!.longitude!,
-              ),
+          circles.add(
+            Circle(
+              circleId: CircleId('${element.id}'),
+              center: position,
+              radius: MapUtils.halfMileInMeters, // Half mile radius
+              fillColor: Colors.red.withOpacity(
+                0.3,
+              ), // Changed to red for better visibility
+              strokeColor: Colors.red, // Changed to red for better visibility
+              strokeWidth: 3, // Increased stroke width
               onTap: () => setGarageAndTap(element),
-              icon:
-                  element.type == GarageYardType.garage
-                      ? garageIcon ?? BitmapDescriptor.defaultMarker
-                      : yardIcon ?? BitmapDescriptor.defaultMarker,
             ),
+          );
+          PrintUtils.customLog(
+            "Added circle for ${element.id} at ${position.latitude}, ${position.longitude}",
           );
         }
       }
+      PrintUtils.customLog("Total circles created: ${circles.length}");
     } catch (e) {
-      PrintUtils.customLog("Error in markers: $e");
+      PrintUtils.customLog("Error in circles: $e");
     }
 
     return locationState.isLoading
@@ -111,19 +135,56 @@ class _MapExploreState extends ConsumerState<MapExplore> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Error: ${locationState.error}', maxLines: 3),
+              Icon(Icons.location_off, size: 64, color: Colors.grey[400]),
               Spacing.sizedBoxH_16(),
-              ElevatedButton(
-                onPressed: () async {
-                  bool opened = await openAppSettings();
-                  if (!opened) {
-                    CustomToast.showToast(
-                      "Failed to open settings",
-                      status: ToastStatus.error,
-                    );
-                  }
-                },
-                child: const Text('Open App Settings'),
+              Text(
+                'Location Error',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Spacing.sizedBoxH_08(),
+              Text(
+                locationState.error!,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Spacing.sizedBoxH_24(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ref.read(mapNotifierProvider.notifier).retryGetLocation();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      // Request location permission first
+                      PermissionStatus status =
+                          await Permission.location.request();
+
+                      if (status.isDenied || status.isPermanentlyDenied) {
+                        // Open app settings for location permission
+                        bool opened = await openAppSettings();
+                        if (!opened) {
+                          CustomToast.showToast(
+                            "Failed to open settings",
+                            status: ToastStatus.error,
+                          );
+                        }
+                      } else if (status.isGranted) {
+                        // Permission granted, retry location
+                        ref
+                            .read(mapNotifierProvider.notifier)
+                            .retryGetLocation();
+                      }
+                    },
+                    icon: const Icon(Icons.location_on),
+                    label: const Text('Location Settings'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -135,22 +196,14 @@ class _MapExploreState extends ConsumerState<MapExplore> {
               mapType: MapType.terrain,
               myLocationButtonEnabled: true,
               initialCameraPosition: CameraPosition(
-                target:
-                    // markers.isEmpty
-                    //     ?
-                    locationState.currentLatLng!,
-                // : markers.first.position,
-
-                ///set this to inital marker
-                zoom: zool,
-
-                ///zoom level
+                target: locationState.currentLatLng!,
+                zoom: 12.0, // Fixed zoom level to ensure circles are visible
               ),
               onMapCreated: (GoogleMapController controller) {
                 // ref.read(mapControllerState.notifier).state =
                 //     controller;
               },
-              markers: markers,
+              circles: circles,
             ),
             if (onTap)
               Positioned(
@@ -168,16 +221,6 @@ class _MapExploreState extends ConsumerState<MapExplore> {
               ),
           ],
         )
-        : const Center(child: Text('Unable to fetch location'))
-    // GoogleMap(
-    //   mapType: MapType.normal,
-    //   myLocationButtonEnabled: false,
-    //   initialCameraPosition: const CameraPosition(
-    //     target: LatLng(37.42796133580664, -122.085749655962),
-    //     zoom: 15,
-    //   ),
-    //   onMapCreated: (GoogleMapController controller) {},
-    // )
-    ;
+        : const Center(child: Text('Unable to fetch location'));
   }
 }

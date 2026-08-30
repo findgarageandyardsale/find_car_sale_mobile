@@ -11,6 +11,7 @@ class FilterNotifier extends StateNotifier<FilterState> {
     DateTime? startDate,
     DateTime? endDate,
     List<CarCondition>? selectedCategories,
+    String? selectedState,
   }) {
     state = state.copyWith(
       zipCode: zipCode ?? state.zipCode,
@@ -18,6 +19,7 @@ class FilterNotifier extends StateNotifier<FilterState> {
       startDate: startDate ?? state.startDate,
       endDate: endDate ?? state.endDate,
       selectedCategories: selectedCategories ?? state.selectedCategories,
+      selectedState: selectedState ?? state.selectedState,
     );
   }
 
@@ -56,6 +58,15 @@ class FilterNotifier extends StateNotifier<FilterState> {
 
   void updateIsGarage(bool isGarage) {
     state = state.copyWith(isGarage: isGarage);
+  }
+
+  void updateSelectedState(String? selectedState) {
+    state = state.copyWith(selectedState: selectedState);
+  }
+
+  void clearSelectedState() {
+    state = state.copyWith(selectedState: null);
+    updateToInitial();
   }
 
   bool isSelectedCategory(CarCondition category) {

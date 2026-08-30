@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/services/deeplink_handler_service.dart';
 import 'package:findcarsale/services/notification_service.dart';
@@ -19,22 +20,48 @@ class PushNotificationProvider extends ChangeNotifier {
 
   /// Setup FCM & handle foreground/initial/background messages
   Future<void> setupFirebaseMessage() async {
-    await _requestPermissions();
-    await registerFCMToken();
+    try {
+      // Check if Firebase is initialized
+      if (Firebase.apps.isEmpty) {
+        PrintUtils.customLog('Firebase not initialized, skipping FCM setup');
+        return;
+      }
 
-    _subscribeToTopic();
+      await _requestPermissions();
+      await registerFCMToken();
 
-    _handleInitialMessage();
-    _listenToForegroundMessages();
-    _handleMessageOpenedApp();
+      _subscribeToTopic();
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      _handleInitialMessage();
+      _listenToForegroundMessages();
+      _handleMessageOpenedApp();
+
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
+    } catch (e) {
+      PrintUtils.customLog('Error setting up Firebase messaging: $e');
+    }
   }
 
   /// Request notification permissions
   Future<void> _requestPermissions() async {
     try {
-      await FirebaseMessaging.instance.requestPermission(provisional: true);
+      // Check current permission status first
+      final settings =
+          await FirebaseMessaging.instance.getNotificationSettings();
+
+      if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+        await FirebaseMessaging.instance.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+      }
     } catch (e) {
       PrintUtils.customLog('Error requesting notification permissions: $e');
     }
@@ -54,7 +81,11 @@ class PushNotificationProvider extends ChangeNotifier {
 
   /// Subscribe to default topic
   void _subscribeToTopic() {
-    FirebaseMessaging.instance.subscribeToTopic('default');
+    try {
+      FirebaseMessaging.instance.subscribeToTopic('default');
+    } catch (e) {
+      PrintUtils.customLog('Error subscribing to topic: $e');
+    }
   }
 
   /// Handle app opened via notification when terminated
@@ -68,33 +99,55 @@ class PushNotificationProvider extends ChangeNotifier {
   /// Listen to foreground notifications
   void _listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((message) {
-      final notification = message.notification;
-      final data =
-          message.data.isEmpty ? notification?.toMap() ?? {} : message.data;
-      ref
-          .read(notificationServiceProvider)
-          .showFirebaseNotification(data, notification?.title ?? '');
+      try {
+        if (!_isDisposed && context.mounted) {
+          final notification = message.notification;
+          final data =
+              message.data.isEmpty ? notification?.toMap() ?? {} : message.data;
+          ref
+              .read(notificationServiceProvider)
+              .showFirebaseNotification(data, notification?.title ?? '');
+        }
+      } catch (e) {
+        PrintUtils.customLog('Error handling foreground message: $e');
+      }
     });
   }
 
   /// Handle background-tapped notifications
   void _handleMessageOpenedApp() {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      _handleNotificationData(message.data);
+      try {
+        if (!_isDisposed && context.mounted) {
+          _handleNotificationData(message.data);
+        }
+      } catch (e) {
+        PrintUtils.customLog('Error handling message opened app: $e');
+      }
     });
   }
 
   /// Common logic to parse & handle notification data
   void _handleNotificationData(Map<String, dynamic> data) {
-    DeepLinkHandler.handleUrl(data, context);
+    try {
+      if (!_isDisposed && context.mounted) {
+        DeepLinkHandler.handleUrl(data, context);
+      }
+    } catch (e) {
+      PrintUtils.customLog('Error handling notification data: $e');
+    }
   }
 
   /// Unsubscribe and unregister token
   Future<void> unsubscribeFromTopic() async {
-    final token = await FirebaseMessaging.instance.getToken();
-
-    if (token != null) {}
-    await FirebaseMessaging.instance.unsubscribeFromTopic('default');
+    try {
+      if (Firebase.apps.isNotEmpty) {
+        await FirebaseMessaging.instance.unsubscribeFromTopic('default');
+        PrintUtils.customLog('Successfully unsubscribed from default topic');
+      }
+    } catch (e) {
+      PrintUtils.customLog('Error unsubscribing from topic: $e');
+    }
   }
 
   /// Only notify if not disposed
@@ -111,6 +164,14 @@ class PushNotificationProvider extends ChangeNotifier {
 
 /// Background message handler
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await FirebaseMessaging.instance;
-  // Handle background logic here if needed
+  try {
+    // Ensure Firebase is initialized in background
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp();
+    }
+    PrintUtils.customLog("Handling background message: ${message.messageId}");
+    // Handle background logic here if needed
+  } catch (e) {
+    PrintUtils.customLog('Error in background message handler: $e');
+  }
 }

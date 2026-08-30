@@ -20,6 +20,7 @@ class AuthField extends StatefulWidget {
     this.validator,
     this.maxlines = 1,
     this.readOnly = false,
+    this.prefixIcon,
     this.textCapitalization = TextCapitalization.none,
     this.labelText,
     this.onChanged,
@@ -35,6 +36,7 @@ class AuthField extends StatefulWidget {
   final bool obscureText;
   final Widget? suffixIcon;
   final TextCapitalization textCapitalization;
+  final Widget? prefixIcon;
 
   final TextInputAction? textInputAction;
 
@@ -116,6 +118,8 @@ class _AuthFieldState extends State<AuthField> {
           context,
         ).textTheme.bodyMedium!.copyWith(color: Colors.red),
         filled: widget.fillColor != null ? true : false,
+        prefixIcon: widget.prefixIcon,
+
         suffixIcon:
             widget.suffixIcon ??
             (widget.obscureText == false

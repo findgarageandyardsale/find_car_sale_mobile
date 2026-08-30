@@ -40,7 +40,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
             children: [
               Center(
                 child: Image.asset(
-                  'assets/launcher.png',
+                  'assets/launcher.jpeg',
                   height: 160,
                   width: 160,
                 ),

@@ -11,6 +11,7 @@ class FilterState {
   final DateTime? endDate;
   final bool? isGarage;
   final List<CarCondition>? selectedCategories;
+  final String? selectedState;
 
   FilterState({
     this.zipCode,
@@ -19,6 +20,7 @@ class FilterState {
     this.endDate,
     this.isGarage,
     this.selectedCategories,
+    this.selectedState,
   });
 
   FilterState copyWith({
@@ -28,6 +30,7 @@ class FilterState {
     bool? isGarage,
     DateTime? endDate,
     List<CarCondition>? selectedCategories,
+    String? selectedState,
   }) {
     return FilterState(
       zipCode: zipCode ?? this.zipCode,
@@ -36,6 +39,7 @@ class FilterState {
       endDate: endDate ?? this.endDate,
       isGarage: isGarage ?? this.isGarage,
       selectedCategories: selectedCategories ?? this.selectedCategories,
+      selectedState: selectedState ?? this.selectedState,
     );
   }
 
@@ -46,6 +50,8 @@ class FilterState {
       startDate: sDate,
       endDate: eDate,
       isGarage: isGarage,
+      selectedCategories: selectedCategories,
+      selectedState: selectedState,
     );
   }
 
@@ -56,6 +62,8 @@ class FilterState {
       startDate: startDate,
       endDate: endDate,
       isGarage: isGarage,
+      selectedCategories: selectedCategories,
+      selectedState: selectedState,
     );
   }
 
@@ -80,8 +88,7 @@ class FilterState {
       if (endDate != null)
         'end_date': CustomDateUtils.formatDateFilter(endDate!),
       if (isGarage != null) 'is_garage': isGarage,
-      if (selectedCategories != null)
-        'condition': (selectedCategories ?? []).map((e) => e.id).toList(),
+      if (selectedState != null) 'admin_area': selectedState,
     };
     PrintUtils.customLog('FilterState.toJson: ${jsonEncode(map)}');
     return map;
@@ -95,6 +102,7 @@ class FilterState {
       endDate: null,
       radius: PrintUtils.radiusInAllChip ? null : 15,
       selectedCategories: null,
+      selectedState: null,
     );
   }
 }
@@ -113,8 +121,6 @@ extension DateFilterText on DateFilter {
         return 'This Month';
       case DateFilter.customRange:
         return 'Custom Range';
-      default:
-        return '';
     }
   }
 }

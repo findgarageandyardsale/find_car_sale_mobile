@@ -11,7 +11,7 @@ class SaleNotifier extends StateNotifier<ExploreState> {
   bool isExpired;
 
   SaleNotifier(this.saleRepository, this.isExpired)
-      : super(const ExploreState.initial());
+    : super(const ExploreState.initial());
 
   bool get isFetching =>
       state.state != ExploreConcreteState.loading &&
@@ -20,9 +20,10 @@ class SaleNotifier extends StateNotifier<ExploreState> {
   Future<void> fetchExplorePosts() async {
     if (isFetching && state.state != ExploreConcreteState.fetchedAllExplore) {
       state = state.copyWith(
-        state: state.page > 0
-            ? ExploreConcreteState.fetchingMore
-            : ExploreConcreteState.loading,
+        state:
+            state.page > 0
+                ? ExploreConcreteState.fetchingMore
+                : ExploreConcreteState.loading,
         isLoading: true,
       );
 
@@ -44,9 +45,10 @@ class SaleNotifier extends StateNotifier<ExploreState> {
   Future<void> searchExplorePosts(String query) async {
     if (isFetching && state.state != ExploreConcreteState.fetchedAllExplore) {
       state = state.copyWith(
-        state: state.page > 0
-            ? ExploreConcreteState.fetchingMore
-            : ExploreConcreteState.loading,
+        state:
+            state.page > 0
+                ? ExploreConcreteState.fetchingMore
+                : ExploreConcreteState.loading,
         isLoading: true,
       );
 
@@ -66,33 +68,38 @@ class SaleNotifier extends StateNotifier<ExploreState> {
   }
 
   void updateStateFromResponse(
-      Either<AppException, PaginatedResponse> response) {
-    response.fold((failure) {
-      state = state.copyWith(
-        state: ExploreConcreteState.failure,
-        message: failure.message,
-        isLoading: false,
-      );
-    }, (data) {
-      //
+    Either<AppException, PaginatedResponse> response,
+  ) {
+    response.fold(
+      (failure) {
+        state = state.copyWith(
+          state: ExploreConcreteState.failure,
+          message: failure.message,
+          isLoading: false,
+        );
+      },
+      (data) {
+        //
 
-      final garageYardList =
-          (data.data ?? []).map((e) => Garageayard.fromJson(e)).toList();
+        final garageYardList =
+            (data.data ?? []).map((e) => Garageayard.fromJson(e)).toList();
 
-      final totalList = [...state.garageYardList, ...garageYardList];
+        final totalList = [...state.garageYardList, ...garageYardList];
 
-      state = state.copyWith(
-        garageYardList: totalList,
-        state: totalList.length == data.pagination?.total
-            ? ExploreConcreteState.fetchedAllExplore
-            : ExploreConcreteState.loaded,
-        hasData: true,
-        message: totalList.isEmpty ? 'No posts found' : data.message,
-        page: (data.pagination?.currentPage ?? 0),
-        total: data.pagination?.total,
-        isLoading: false,
-      );
-    });
+        state = state.copyWith(
+          garageYardList: totalList,
+          state:
+              totalList.length == data.pagination?.total
+                  ? ExploreConcreteState.fetchedAllExplore
+                  : ExploreConcreteState.loaded,
+          hasData: true,
+          message: totalList.isEmpty ? 'No posts found' : data.message,
+          page: (data.pagination?.currentPage ?? 0),
+          total: data.pagination?.total,
+          isLoading: false,
+        );
+      },
+    );
   }
 
   void resetState() {

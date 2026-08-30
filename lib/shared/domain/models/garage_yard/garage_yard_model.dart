@@ -2,6 +2,7 @@
 //
 //     final garageayard = garageayardFromJson(jsonString);
 
+import 'package:findcarsale/shared/domain/models/user/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:findcarsale/shared/domain/models/attachment_file/attachment_model.dart';
@@ -24,10 +25,12 @@ class Garageayard with _$Garageayard {
     @JsonKey(name: 'available_time_slots')
     List<AvailableTimeSlot>? availableTimeSlots,
     CarCondition? condition,
+    @JsonKey(name: 'user_id') int? userId,
     @JsonKey(name: 'images') List<AttachmentModel>? attachments,
     @JsonKey(name: 'is_new') bool? isNew,
     @JsonKey(name: 'warranty') bool? warranty,
     @JsonKey(fromJson: convertIntToDouble) double? miles,
+    User? user,
     String? model,
     String? brand,
     String? year,
@@ -57,6 +60,8 @@ enum StatusEnum {
   active,
   @JsonValue('Expired')
   expired,
+  @JsonValue('Sold')
+  sold,
 }
 
 // Enum for GarageYardType

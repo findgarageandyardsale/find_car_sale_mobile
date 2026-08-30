@@ -1,5 +1,5 @@
 ///enum & extension for resource create source
-enum FilterEnum { all, distance, condition, date }
+enum FilterEnum { all, distance, state }
 
 extension FilterExtension on FilterEnum {
   String get source {
@@ -10,10 +10,8 @@ extension FilterExtension on FilterEnum {
       case FilterEnum.distance:
         return 'distance';
 
-      case FilterEnum.condition:
-        return 'condition';
-      case FilterEnum.date:
-        return 'date';
+      case FilterEnum.state:
+        return 'state';
     }
   }
 
@@ -24,10 +22,8 @@ extension FilterExtension on FilterEnum {
 
       case FilterEnum.distance:
         return 'Distance';
-      case FilterEnum.condition:
-        return 'Condition';
-      case FilterEnum.date:
-        return 'Date';
+      case FilterEnum.state:
+        return 'State';
     }
   }
 }

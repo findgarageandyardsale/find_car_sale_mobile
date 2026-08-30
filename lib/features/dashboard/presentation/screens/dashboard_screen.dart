@@ -6,6 +6,7 @@ import 'package:app_version_update/app_version_update.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:findcarsale/shared/utils/print_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:findcarsale/features/explore/presentation/providers/filter_state_provider.dart';
@@ -35,7 +36,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int currentPageIndex = 0;
 
   final appleId =
-      ''; // If this value is null, its packagename will be considered
+      '6752904628'; // If this value is null, its packagename will be considered
   final playStoreId =
       'com.findorlookup.findcarsale'; // If this value is null, its packagename will be considered
 
@@ -71,17 +72,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   checkForUpdate() async {
     await AppVersionUpdate.checkForUpdates(
-      appleId: appleId,
-      playStoreId: playStoreId,
-    ).then((data) async {
-      if (data.canUpdate!) {
-        AppVersionUpdate.showAlertUpdate(
-          mandatory: true,
-          appVersionResult: data,
-          context: context,
-        );
-      }
-    });
+          appleId: appleId,
+          playStoreId: playStoreId,
+        )
+        .then((data) async {
+          if (data.canUpdate!) {
+            AppVersionUpdate.showAlertUpdate(
+              mandatory: true,
+              appVersionResult: data,
+              context: context,
+            );
+          }
+        })
+        .catchError((e) {
+          PrintUtils.customLog('Error in checkForUpdate: $e');
+        });
   }
 
   @override

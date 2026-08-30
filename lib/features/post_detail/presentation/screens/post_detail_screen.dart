@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:findcarsale/dummy_data.dart';
+import 'package:findcarsale/shared/presentation/formz_state.dart';
+import 'package:findcarsale/shared/widgets/action_button.dart';
 import 'package:findcarsale/shared/widgets/no_data.dart';
+import 'package:findcarsale/shared/widgets/sold_overlay.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +13,15 @@ import 'package:findcarsale/routes/app_route.gr.dart';
 import 'package:findcarsale/shared/extension/context.dart';
 import 'package:findcarsale/shared/widgets/custom_toast.dart';
 import '../../../../services/user_cache_service/domain/providers/current_user_provider.dart';
+import '../../../../services/chat_service/presentation/providers/chat_state_provider.dart';
 import '../../../../shared/constants/spacing.dart';
 import '../../../../shared/domain/models/garage_yard/garage_yard_model.dart';
 import '../../../../shared/domain/models/user/user_model.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/app_utils.dart';
-import '../../../../shared/utils/cusotm_date_utils.dart';
+import '../../../../shared/utils/map_utils.dart';
+import '../../../../shared/widgets/custom_loading.dart';
 import '../../../../shared/widgets/decription_chip.dart';
-import '../../../../shared/widgets/location_text.dart';
-import '../../../../shared/widgets/status_chip.dart';
-import '../../../../shared/widgets/timer_text.dart';
 import '../widgets/custom_carousel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -37,7 +38,8 @@ class PostDetailScreen extends ConsumerStatefulWidget {
 class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   late GoogleMapController mapController;
 
-  final Set<Marker> _markers = {};
+  final Set<Circle> _circles = {};
+  bool _isLoadingChat = false;
 
   void getDetailPage() {
     Future.microtask(() {
@@ -50,33 +52,29 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // _loadCustomMarker();
+    _loadCustomCircle();
     getDetailPage();
   }
 
-  void _loadCustomMarker(garageayard) async {
-    // Load the custom marker from assets
-    BitmapDescriptor customIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(size: Size(16, 26)),
-      garageayard.type == GarageYardType.garage
-          ? 'assets/garage.png'
-          : 'assets/yard.png', // Path to your image in assets
+  void _loadCustomCircle() {
+    // Create a circle with half-mile radius
+    LatLng position = LatLng(
+      widget.garageayard.location?.latitude ?? 27.6782,
+      widget.garageayard.location?.longitude ?? 85.3808,
     );
 
-    // Add a marker using the custom icon
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('customMarker'),
-        position: LatLng(
-          garageayard.location?.latitude ?? 27.6782,
-          garageayard.location?.longitude ?? 85.3808,
-        ),
-        icon: customIcon,
-        // consumeTapEvents: true,
+    _circles.add(
+      Circle(
+        circleId: const CircleId('customCircle'),
+        center: position,
+        radius: MapUtils.halfMileInMeters, // Half mile radius
+        fillColor: Colors.blue.withOpacity(0.2),
+        strokeColor: Colors.blue,
+        strokeWidth: 2,
       ),
     );
 
-    setState(() {}); // Update the UI to display the marker
+    setState(() {}); // Update the UI to display the circle
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -160,400 +158,210 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final currentUserAsyncValue = ref.watch(currentUserProvider);
+    final markState = ref.watch(markAsSoldProvider);
 
     final detailState = ref.watch(detailPageProvider);
-    // final detailDeta = DummyDataService.getDummyGarageYardById(
-    //   widget.garageayard.id ?? 0,
-    // );
 
-    // Use detailDeta for the detail page
-    // final garageayard = detailDeta ?? widget.garageayard;
-    // _loadCustomMarker(garageayard);
-    // bool isGarage = garageayard.type == GarageYardType.garage;
-    // StatusEnum? status = garageayard.status;
+    ref.listen(markAsSoldProvider, (previous, next) {
+      next.maybeWhen(
+        success: (data) {
+          CustomToast.showToast(
+            'Post marked as sold',
+            status: ToastStatus.success,
+          );
+          ref
+              .read(detailPageProvider.notifier)
+              .fetchPostDetails(widget.garageayard.id);
+          ref.read(exploreNotifierProvider);
+        },
+        failure: (error) {
+          CustomToast.showToast(
+            'Mark as sold failed',
+            status: ToastStatus.error,
+          );
+        },
+        orElse: () {},
+      );
+    });
 
-    return context.doublePos(
-      isGarage: true,
-      // detailState.maybeWhen(
-      //   orElse: () {
-      //     return false;
-      //   },
-      //   success: (data) {
-      //     final garageayard = data is Garageayard ? data : widget.garageayard;
-      //     _loadCustomMarker(garageayard);
-      //     bool isGarage = garageayard.type == GarageYardType.garage;
-
-      //     return isGarage;
-      //   },
-      //   failure: (error) {
-      //     return false;
-      //   },
-      //   loading: () {
-      //     return false;
-      //   },
-      //   initial: () {
-      //     return false;
-      //   },
-      // )
-      // ,
-      isActive: widget.isActive,
-      actions: currentUserAsyncValue.when(
-        data: (User? data) {
-          if (data == null) {
-            return [const SizedBox.shrink()];
-          } else {
-            return [];
-          }
-        },
-        error: (Object error, StackTrace stackTrace) {
-          return [const SizedBox.shrink()];
-        },
-        loading: () {
-          return [const SizedBox.shrink()];
-        },
-      ),
-      onPosPressed: () async {
-        detailState.maybeWhen(
-          orElse: () {},
-          success: (data) {
-            final garageayard = data;
-            if (widget.isActive == null) {
-              if (garageayard.location?.latitude == null ||
-                  garageayard.location?.longitude == null) {
-                CustomToast.showToast(
-                  'Location not available',
-                  status: ToastStatus.error,
-                );
-                return;
-              }
-              AppUtils.openAppDirections(
-                garageayard.location?.latitude ?? 0.0,
-                garageayard.location?.longitude ?? 0.0,
+    return CustomLoadingOverlay(
+      isLoading: _isLoadingChat || markState is Loading,
+      child: context.doublePos(
+        isGarage: true,
+        isActive: widget.isActive,
+        actionButton: currentUserAsyncValue.when(
+          data: (User? data) {
+            if (data == null) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ActionButton(
+                  label: 'Login to Chat',
+                  onPressed: () {
+                    context.router.push(LoginScreen());
+                  },
+                ),
               );
-            } else if (widget.isActive == true || widget.isActive == false) {
-              context.router
-                  .push(AddEditPostSaleScreen(garageayard: garageayard))
-                  .then((val) {
-                    if (val == true) {
-                      ref.read(saleNotifierProvider.notifier)
-                        ..resetState()
-                        ..fetchExplorePosts();
-                      Navigator.pop(context);
-                    }
-                  });
+            } else {
+              // Use detailState to get the userId from fetched data
+              return detailState.maybeWhen(
+                success: (garageayard) {
+                  // Check if current user is the post owner
+                  if (garageayard.userId != null &&
+                      garageayard.userId == data.userId) {
+                    // Show owner action buttons (Edit and Mark as Sold)
+                    return _buildOwnerActionButtons(
+                      context,
+                      ref,
+                      data,
+                      garageayard,
+                    );
+                  } else if (garageayard.userId != null &&
+                      garageayard.userId != data.userId) {
+                    // Show chat button if user is not the seller
+                    return _buildChatButton(context, ref, data);
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ActionButton(
+                      label: 'Login to Chat',
+                      onPressed: () {
+                        context.router.push(LoginScreen());
+                      },
+                    ),
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
+              );
             }
           },
-        );
-      },
-      content: detailState.when(
-        initial: () {
-          return const Center(child: CircularProgressIndicator());
+          error: (Object error, StackTrace stackTrace) {
+            return const SizedBox.shrink();
+          },
+          loading: () {
+            return const SizedBox.shrink();
+          },
+        ),
+        onPosPressed: () async {
+          detailState.maybeWhen(
+            orElse: () {},
+            success: (data) {
+              final garageayard = data;
+              if (widget.isActive == null) {
+                if (garageayard.location?.latitude == null ||
+                    garageayard.location?.longitude == null) {
+                  CustomToast.showToast(
+                    'Location not available',
+                    status: ToastStatus.error,
+                  );
+                  return;
+                }
+                AppUtils.openAppDirections(
+                  garageayard.location?.latitude ?? 0.0,
+                  garageayard.location?.longitude ?? 0.0,
+                );
+              } else if (widget.isActive == true || widget.isActive == false) {
+                context.router
+                    .push(AddEditPostSaleScreen(garageayard: garageayard))
+                    .then((val) {
+                      if (val == true) {
+                        ref.read(saleNotifierProvider.notifier)
+                          ..resetState()
+                          ..fetchExplorePosts();
+                        Navigator.pop(context);
+                      }
+                    });
+              }
+            },
+          );
         },
-        loading: () {
-          return const Center(child: CircularProgressIndicator());
-        },
-        failure: (failuer) {
-          return NoData(errorMessage: failuer.toString());
-        },
-        success: (val) {
-          final garageayard = val is Garageayard ? val : widget.garageayard;
-          _loadCustomMarker(garageayard);
-          bool isGarage = true;
-          // garageayard.type == GarageYardType.garage;
-          StatusEnum? status = garageayard.status;
-          return SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomCarousel(
-                    isGarage: isGarage,
-                    share: shareLink,
-                    attachments: garageayard.attachments ?? [],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          garageayard.title ?? '',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color:
-                                isGarage ? AppColors.primary : AppColors.green,
-                          ),
-                        ),
-                        Spacing.sizedBoxH_16(),
-
-                        // Car Specifications Section
-                        Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+        content: detailState.when(
+          initial: () {
+            return const Center(child: CircularProgressIndicator());
+          },
+          loading: () {
+            return const Center(child: CircularProgressIndicator());
+          },
+          failure: (failuer) {
+            return NoData(errorMessage: failuer.toString());
+          },
+          success: (val) {
+            final garageayard = val is Garageayard ? val : widget.garageayard;
+            _loadCustomCircle();
+            bool isGarage = true;
+            // garageayard.type == GarageYardType.garage;
+            return SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomCarousel(
+                      isGarage: isGarage,
+                      share: shareLink,
+                      attachments: garageayard.attachments ?? [],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                'Car Specifications',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      isGarage
-                                          ? AppColors.primary
-                                          : AppColors.green,
+                              Expanded(
+                                child: Text(
+                                  garageayard.title ?? '',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        isGarage
+                                            ? AppColors.primary
+                                            : AppColors.green,
+                                  ),
                                 ),
                               ),
-                              Spacing.sizedBoxH_12(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Brand',
-                                      garageayard.brand ?? 'N/A',
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Model',
-                                      garageayard.model ?? 'N/A',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Spacing.sizedBoxH_08(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Year',
-                                      garageayard.year ?? 'N/A',
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Miles',
-                                      garageayard.miles != null
-                                          ? '${garageayard.miles!.toStringAsFixed(0)} miles'
-                                          : 'N/A',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Spacing.sizedBoxH_08(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Condition',
-                                      garageayard.condition?.name ?? 'N/A',
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: _buildSpecItem(
-                                      'Status',
-                                      garageayard.isNew == true
-                                          ? 'New'
-                                          : 'Used',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              if (garageayard.status == StatusEnum.sold)
+                                SoldOverlay(),
                             ],
                           ),
-                        ),
-                        Spacing.sizedBoxH_16(),
+                          Spacing.sizedBoxH_16(),
 
-                        // Pricing Section
-                        if (garageayard.price != null)
+                          // Car Specifications Section
                           Container(
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                              color:
-                                  isGarage
-                                      ? AppColors.primary.withOpacity(0.1)
-                                      : AppColors.green.withOpacity(0.1),
+                              color: Colors.grey[50],
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color:
-                                    isGarage
-                                        ? AppColors.primary
-                                        : AppColors.green,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Price',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      '\$${garageayard.price!.toStringAsFixed(0)}',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.headlineMedium?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color:
-                                            isGarage
-                                                ? AppColors.primary
-                                                : AppColors.green,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (garageayard.warranty == true)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      'Warranty',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        Spacing.sizedBoxH_16(),
-
-                        if (status != null) StatusChip(status: status),
-                        if (status != null) Spacing.sizedBoxH_16(),
-                        Column(
-                          children:
-                              (garageayard.availableTimeSlots ?? [])
-                                  .map(
-                                    (e) => Column(
-                                      children: [
-                                        TimerText(
-                                          fromDetail: true,
-                                          isGarage: isGarage,
-                                          date: CustomDateUtils.formatDate(
-                                            e.date ?? DateTime.now(),
-                                          ),
-                                          time:
-                                              '${CustomDateUtils.convertTo12HourFormat(e.startTime)} - ${CustomDateUtils.convertTo12HourFormat(e.endTime)}',
-                                        ),
-                                        Spacing.sizedBoxH_08(),
-                                      ],
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                        Spacing.sizedBoxH_08(),
-
-                        // Enhanced Location Section
-                        Container(
-                          padding: const EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[50],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.blue[200]!),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    color: Colors.blue[600],
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Location',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.blue[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Spacing.sizedBoxH_08(),
-                              LocationText(
-                                fromDetail: true,
-                                isGarage: isGarage,
-                                location: AppUtils.formatLocationAsAddress(
-                                  garageayard.location ?? const LocationModel(),
-                                ),
-                              ),
-                              if (garageayard.location?.addressLine !=
-                                  null) ...[
-                                Spacing.sizedBoxH_04(),
-                                Text(
-                                  garageayard.location!.addressLine!,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: Colors.grey[600]),
-                                ),
-                              ],
-                              if (garageayard.location?.zipCode != null) ...[
-                                Spacing.sizedBoxH_04(),
-                                Text(
-                                  'ZIP: ${garageayard.location!.zipCode!}',
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(color: Colors.grey[500]),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        Spacing.sizedBoxH_16(),
-
-                        // Contact Information Section
-                        if (garageayard.phoneNumber != null)
-                          Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.green[200]!),
+                              border: Border.all(color: Colors.grey[200]!),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  'Car Specifications',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                        isGarage
+                                            ? AppColors.primary
+                                            : AppColors.green,
+                                  ),
+                                ),
+                                Spacing.sizedBoxH_12(),
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.phone,
-                                      color: Colors.green[600],
-                                      size: 20,
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Make',
+                                        garageayard.brand ?? 'N/A',
+                                      ),
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Contact Information',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.green[600],
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Model',
+                                        garageayard.model ?? 'N/A',
                                       ),
                                     ),
                                   ],
@@ -561,21 +369,37 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                 Spacing.sizedBoxH_08(),
                                 Row(
                                   children: [
-                                    Text(
-                                      'Phone: ',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w500,
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Year',
+                                        garageayard.year ?? 'N/A',
                                       ),
                                     ),
-                                    Text(
-                                      garageayard.phoneNumber!,
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium?.copyWith(
-                                        color: Colors.green[700],
-                                        fontWeight: FontWeight.w600,
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Miles',
+                                        garageayard.miles != null
+                                            ? '${garageayard.miles!.toStringAsFixed(0)} miles'
+                                            : 'N/A',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Spacing.sizedBoxH_08(),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Condition',
+                                        garageayard.condition?.name ?? 'N/A',
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _buildSpecItem(
+                                        'Status',
+                                        garageayard.isNew == true
+                                            ? 'New'
+                                            : 'Used',
                                       ),
                                     ),
                                   ],
@@ -583,52 +407,342 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                               ],
                             ),
                           ),
-                        if (garageayard.phoneNumber != null)
                           Spacing.sizedBoxH_16(),
-                        Text(
-                          garageayard.description ?? '',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Spacing.sizedBoxH_16(),
-                        DescriptionChip(
-                          isGarage: isGarage,
-                          text: garageayard.condition?.name ?? '',
-                        ),
-                        Spacing.sizedBoxH_16(),
-                        SizedBox(
-                          height: 320,
-                          child: GoogleMap(
-                            mapType: MapType.terrain,
-                            onMapCreated: _onMapCreated,
-                            myLocationButtonEnabled: false,
-                            markers: _markers,
-                            mapToolbarEnabled: true,
-                            zoomControlsEnabled: true,
-                            zoomGesturesEnabled: true,
-                            gestureRecognizers:
-                                <Factory<OneSequenceGestureRecognizer>>{
-                                  Factory<OneSequenceGestureRecognizer>(
-                                    () => EagerGestureRecognizer(),
-                                  ),
-                                },
-                            initialCameraPosition: CameraPosition(
-                              target: LatLng(
-                                garageayard.location?.latitude ?? 27.6782,
-                                garageayard.location?.longitude ?? 85.3808,
+
+                          // Pricing Section
+                          if (garageayard.price != null)
+                            Container(
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color:
+                                    isGarage
+                                        ? AppColors.primary.withOpacity(0.1)
+                                        : AppColors.green.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      isGarage
+                                          ? AppColors.primary
+                                          : AppColors.green,
+                                  width: 1,
+                                ),
                               ),
-                              zoom: 15,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Price',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        '\$${garageayard.price!.toStringAsFixed(0)}',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.headlineMedium?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              isGarage
+                                                  ? AppColors.primary
+                                                  : AppColors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (garageayard.warranty == true)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        'Warranty',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodySmall?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          Spacing.sizedBoxH_16(),
+
+                          Spacing.sizedBoxH_16(),
+
+                          Text(
+                            garageayard.description ?? '',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Spacing.sizedBoxH_16(),
+                          DescriptionChip(
+                            isGarage: isGarage,
+                            text: garageayard.condition?.name ?? '',
+                          ),
+                          Spacing.sizedBoxH_16(),
+                          SizedBox(
+                            height: 320,
+                            child: GoogleMap(
+                              mapType: MapType.terrain,
+                              onMapCreated: _onMapCreated,
+                              myLocationButtonEnabled: false,
+                              circles: _circles,
+                              mapToolbarEnabled: true,
+                              zoomControlsEnabled: true,
+                              zoomGesturesEnabled: true,
+                              gestureRecognizers:
+                                  <Factory<OneSequenceGestureRecognizer>>{
+                                    Factory<OneSequenceGestureRecognizer>(
+                                      () => EagerGestureRecognizer(),
+                                    ),
+                                  },
+                              initialCameraPosition: CameraPosition(
+                                target: LatLng(
+                                  garageayard.location?.latitude ?? 27.6782,
+                                  garageayard.location?.longitude ?? 85.3808,
+                                ),
+                                zoom: 15,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
+  }
+
+  Widget _buildChatButton(
+    BuildContext context,
+    WidgetRef ref,
+    User currentUser,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: ActionButton(
+        label: _isLoadingChat ? 'Starting Chat...' : 'Chat with Seller',
+        onPressed:
+            _isLoadingChat
+                ? null
+                : () => _initiateChat(context, ref, currentUser),
+        borderColor: AppColors.primary,
+        buttonColor:
+            _isLoadingChat
+                ? AppColors.primary.withOpacity(0.6)
+                : AppColors.primary,
+        textColor: AppColors.white,
+        icon: _isLoadingChat ? null : Icons.chat,
+      ),
+    );
+  }
+
+  Widget _buildOwnerActionButtons(
+    BuildContext context,
+    WidgetRef ref,
+    User currentUser,
+    Garageayard garageayard,
+  ) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: ActionButton(
+              label: 'Edit Post',
+              onPressed: () => _editPost(context, ref, garageayard),
+              borderColor: AppColors.primary,
+              buttonColor: AppColors.primary,
+              textColor: AppColors.white,
+              icon: Icons.edit,
+            ),
+          ),
+          const SizedBox(width: 12),
+          if (garageayard.status != StatusEnum.expired &&
+              garageayard.status != StatusEnum.sold)
+            Expanded(
+              child: ActionButton(
+                label:
+                    garageayard.status == StatusEnum.expired
+                        ? 'Mark as Available'
+                        : 'Mark as Sold',
+                onPressed: () => _togglePostStatus(context, ref, garageayard),
+                borderColor:
+                    garageayard.status == StatusEnum.expired
+                        ? AppColors.green
+                        : Colors.red,
+                buttonColor:
+                    garageayard.status == StatusEnum.expired
+                        ? AppColors.green
+                        : Colors.red,
+                textColor: AppColors.white,
+                icon:
+                    garageayard.status == StatusEnum.expired
+                        ? Icons.check_circle
+                        : Icons.sell,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _editPost(BuildContext context, WidgetRef ref, Garageayard garageayard) {
+    context.router.push(AddEditPostSaleScreen(garageayard: garageayard)).then((
+      val,
+    ) {
+      if (val == true) {
+        ref.read(saleNotifierProvider.notifier)
+          ..resetState()
+          ..fetchExplorePosts();
+        // Refresh the detail page
+        ref.read(detailPageProvider.notifier).fetchPostDetails(garageayard.id);
+      }
+    });
+  }
+
+  Future<void> _togglePostStatus(
+    BuildContext context,
+    WidgetRef ref,
+    Garageayard garageayard,
+  ) async {
+    try {
+      // Show confirmation dialog
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Mark as Sold?'),
+              content: Text(
+                'This will mark your post as sold and remove it from active listings.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: AppColors.white,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Mark Sold'),
+                ),
+              ],
+            ),
+      );
+
+      if (confirmed == true) {
+        ref.read(markAsSoldProvider.notifier).markAsSold(garageayard.id);
+      }
+    } catch (e) {
+      CustomToast.showToast(
+        'Error updating post status',
+        status: ToastStatus.error,
+      );
+    }
+  }
+
+  Future<void> _initiateChat(
+    BuildContext context,
+    WidgetRef ref,
+    User currentUser,
+  ) async {
+    try {
+      // Set loading state
+      setState(() {
+        _isLoadingChat = true;
+      });
+
+      final detailState = ref.read(detailPageProvider);
+
+      // Get the garage yard data from detailState
+      final garageayard = detailState.maybeWhen(
+        success: (data) => data is Garageayard ? data : widget.garageayard,
+        orElse: () => widget.garageayard,
+      );
+
+      if (garageayard.userId == null) {
+        CustomToast.showToast(
+          'Seller information not available',
+          status: ToastStatus.error,
+        );
+        return;
+      }
+
+      final chatService = ref.read(chatServiceProvider);
+
+      // Create or get existing chat room with timeout
+      final chatRoom = await chatService.createOrGetChatRoom(
+        garageYardId: garageayard.id.toString(),
+        sellerId: garageayard.userId.toString(),
+        sellerName:
+            '${garageayard.user?.firstName} ${garageayard.user?.lastName}',
+        buyerName: '${currentUser.firstName} ${currentUser.lastName}',
+        postId: garageayard.id.toString(),
+        postTitle: garageayard.title ?? '',
+        buyerId: currentUser.userId.toString(),
+        garageYardTitle: garageayard.title,
+        chatInitiatedByUsername:
+            '${currentUser.firstName} ${currentUser.lastName}',
+      );
+
+      if (chatRoom != null) {
+        // Navigate to chat screen
+        if (context.mounted) {
+          context.router.push(ChatScreen(chatRoom: chatRoom));
+        }
+      } else {
+        CustomToast.showToast(
+          'Failed to start chat. Please try again.',
+          status: ToastStatus.error,
+        );
+      }
+    } catch (e) {
+      print('Error in _initiateChat: $e'); // Debug log
+
+      String errorMessage = 'Error starting chat';
+      if (e.toString().contains('timeout') ||
+          e.toString().contains('timed out')) {
+        errorMessage =
+            'Connection timed out. Please check your internet connection.';
+      } else if (e.toString().contains('Unable to resolve host') ||
+          e.toString().contains('firestore.googleapis.com')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (e.toString().contains('Firebase not initialized')) {
+        errorMessage = 'Firebase not ready. Please try again.';
+      } else {
+        errorMessage = 'Error starting chat: ${e.toString()}';
+      }
+
+      CustomToast.showToast(errorMessage, status: ToastStatus.error);
+    } finally {
+      // Reset loading state
+      if (mounted) {
+        setState(() {
+          _isLoadingChat = false;
+        });
+      }
+    }
   }
 }
